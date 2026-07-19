@@ -1,0 +1,196 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+.navbar{
+
+    width:100%;
+
+    height:90px;
+
+    background:#081924;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 60px;
+
+}
+
+.logo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+
+}
+
+.logo-icon{
+    width:45px;
+    height:auto;
+    object-fit:contain;
+}
+
+.logo-text h2{
+
+    color:white;
+
+    font-size:40px;
+
+    letter-spacing:2px;
+
+}
+
+.logo-text span{
+
+    color:white;
+
+    font-size:15px;
+
+    letter-spacing:2px;
+
+}
+
+.nav-links{
+    display:flex;
+    list-style:none;
+    gap:35px;
+}
+
+.nav-links a{
+    color: white;
+    text-decoration: none;
+}
+
+.nav-links a:hover{
+    color:#f7b500;
+}
+
+.nav-links li{
+    color:white;
+    cursor:pointer;
+    font-size:17px;
+    transition:.3s;
+}
+
+.menu-toggle{
+    display:none;
+    background:none;
+    border:none;
+    color:white;
+    font-size:24px;
+    cursor:pointer;
+}
+
+@media (max-width: 950px) {
+    .navbar{
+        padding:0 30px;
+    }
+
+    .logo-text h2{
+        font-size:28px;
+    }
+
+    .logo-text span{
+        font-size:13px;
+    }
+
+    .nav-links{
+        position:absolute;
+        top:90px;
+        right:0;
+        width:260px;
+        flex-direction:column;
+        background:#081924;
+        padding:20px;
+        gap:20px;
+        transform: translateX(100%);
+        transition: transform .25s ease;
+        box-shadow: -8px 12px 35px rgba(0,0,0,.25);
+    }
+
+    .nav-links.open{
+        transform: translateX(0);
+    }
+
+    .menu-toggle{
+        display:block;
+    }
+
+    .quote-btn{
+        display:none;
+    }
+
+    .navbar-actions {
+        display:none;
+    }
+}
+
+@media (max-width: 720px){
+    .navbar{
+        flex-wrap:wrap;
+        justify-content:space-between;
+        height:auto;
+        padding:18px 20px;
+    }
+    .nav-links{
+        width:100%;
+        top:80px;
+    }
+}
+
+.nav-links li:hover{
+
+    color:#f7b500;
+
+}
+
+.active{
+
+    color:#f7b500 !important;
+
+    border-bottom:3px solid #f7b500;
+
+    padding-bottom:10px;
+
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quote-btn{
+
+    background:#f7b500;
+
+    color:black;
+
+    border:none;
+
+    padding:16px 28px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.quote-btn:hover{
+
+    background:white;
+
+}

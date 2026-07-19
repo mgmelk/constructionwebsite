@@ -1,0 +1,58 @@
+.cards{
+
+display:grid;
+
+grid-template-columns:repeat(4,1fr);
+
+gap:30px;
+
+margin:30px;
+
+margin-left:290px;
+
+}
+
+.card{
+
+background:white;
+
+padding:30px;
+
+border-radius:10px;
+
+box-shadow:0 3px 10px rgba(0,0,0,.1);
+
+text-align:center;
+
+}
+
+.card-icon{
+
+font-size:45px;
+
+color:#f7b500;
+
+margin-bottom:20px;
+
+}
+
+.card h2{
+
+font-size:40px;
+
+margin-bottom:10px;
+
+}
+
+.card p{
+
+color:#666;
+
+}
+
+.dashboard-loading {
+    margin-left: 290px;
+    padding: 40px 30px;
+    color: #081924;
+    font-weight: 600;
+}

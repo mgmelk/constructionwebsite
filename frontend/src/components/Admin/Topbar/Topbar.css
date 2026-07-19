@@ -1,0 +1,74 @@
+.topbar{
+
+    height:80px;
+
+    background:white;
+
+    margin-left:260px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 40px;
+
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+
+}
+
+.topbar-right{
+
+    display:flex;
+
+    gap:20px;
+
+    align-items:center;
+
+}
+
+.admin-auth-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-auth-link {
+    text-decoration: none;
+    color: #081924;
+    font-weight: 600;
+    padding: 7px 12px;
+    border-radius: 999px;
+    transition: 0.3s ease;
+}
+
+.admin-auth-link:hover {
+    background: #f7b500;
+}
+
+.admin-auth-link-primary {
+    background: #f7b500;
+    color: #081924;
+}
+
+.icon{
+
+    font-size:25px;
+
+    cursor:pointer;
+
+}
+
+.profile{
+
+    font-size:40px;
+
+    color:#081924;
+
+}
+
+.admin-name {
+    font-weight: 600;
+    color: #081924;
+}

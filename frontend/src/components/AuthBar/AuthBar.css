@@ -1,0 +1,44 @@
+.auth-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  background: #081924;
+  padding: 10px 60px 0;
+}
+
+.auth-link {
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  transition: 0.3s ease;
+}
+
+.login-link {
+  color: #ffffff;
+  background: transparent;
+  border: 1px solid #f7b500;
+}
+
+.register-link {
+  color: #081924;
+  background: #f7b500;
+}
+
+.auth-link:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+@media (max-width: 950px) {
+  .auth-bar {
+    padding: 10px 30px 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .auth-bar {
+    padding: 10px 20px 0;
+  }
+}

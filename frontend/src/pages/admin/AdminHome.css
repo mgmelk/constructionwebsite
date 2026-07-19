@@ -1,0 +1,25 @@
+.admin-home-page {
+  margin-left: 260px;
+  padding: 40px;
+  min-height: calc(100vh - 80px);
+  background: #f4f7fb;
+}
+
+.admin-home-card {
+  max-width: 760px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 18px;
+  padding: 40px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+}
+
+.admin-home-card h1 {
+  margin-bottom: 16px;
+  color: #081924;
+}
+
+.admin-home-card p {
+  color: #4f5f75;
+  line-height: 1.7;
+}

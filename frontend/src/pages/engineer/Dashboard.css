@@ -1,0 +1,57 @@
+.engineer-dashboard-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #081924, #0f2f3f);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.engineer-dashboard-card {
+  width: 100%;
+  max-width: 980px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.engineer-dashboard-card h1 {
+  color: #081924;
+  margin-bottom: 8px;
+}
+
+.engineer-dashboard-card p {
+  color: #556;
+}
+
+.engineer-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.engineer-dashboard-box {
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.engineer-dashboard-box h3 {
+  color: #081924;
+  margin-bottom: 8px;
+}
+
+.engineer-loading {
+  margin-top: 16px;
+  color: #081924;
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .engineer-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,14 @@
+.projects-page{
+  padding: 80px 60px;
+  min-height: 60vh;
+  box-sizing: border-box;
+  text-align: left;
+}
+.projects-inner h1{
+  font-size: 40px;
+  color: #081924;
+  margin-bottom: 16px;
+}
+.projects-inner p{
+  color: #555;
+}

@@ -1,0 +1,62 @@
+.hr-dashboard-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #081924, #0f2f3f);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hr-dashboard-card {
+  width: 100%;
+  max-width: 980px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.hr-dashboard-card h1 {
+  color: #081924;
+  margin-bottom: 8px;
+}
+
+.hr-dashboard-card p {
+  color: #556;
+}
+
+.hr-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.hr-dashboard-box {
+  background: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.hr-dashboard-box h3 {
+  color: #081924;
+  margin-bottom: 8px;
+}
+
+.hr-loading {
+  margin-top: 16px;
+  color: #081924;
+  font-weight: 600;
+}
+
+.hr-error {
+  margin-top: 16px;
+  color: #c0392b;
+}
+
+@media (max-width: 720px) {
+  .hr-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
