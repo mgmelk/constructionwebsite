@@ -116,3 +116,25 @@
     gap:10px;
 
 }
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 10px;
+    }
+    .sidebar-menu {
+        display: flex;
+        flex-direction: row;
+        margin-top: 0;
+        gap: 10px;
+    }
+    .sidebar-title {
+        display: none;
+    }
+}
+

@@ -134,3 +134,17 @@
     color:white;
 
 }
+
+@media (max-width: 600px) {
+    .services-title h2 {
+        font-size: 28px;
+    }
+    .services-title p {
+        font-size: 16px;
+        line-height: 28px;
+    }
+    .services {
+        padding: 50px 20px;
+    }
+}
+

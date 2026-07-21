@@ -85,3 +85,23 @@
     color:#ddd;
 
 }
+
+@media (max-width: 1024px) {
+    .statistics-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .statistics-container {
+        grid-template-columns: 1fr;
+    }
+    .statistics {
+        padding: 60px 30px;
+    }
+    .statistics-header h2 {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
+}
+

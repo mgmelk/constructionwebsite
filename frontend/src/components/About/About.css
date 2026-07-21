@@ -113,3 +113,28 @@
     color:white;
 
 }
+
+@media (max-width: 1024px) {
+    .about {
+        flex-direction: column;
+        padding: 60px 40px;
+    }
+    .about-image {
+        width: 100%;
+        margin-bottom: 40px;
+    }
+    .about-text {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .about {
+        padding: 50px 20px;
+    }
+    .about-text h2 {
+        font-size: 32px;
+    }
+}
+

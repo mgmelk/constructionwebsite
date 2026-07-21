@@ -98,3 +98,17 @@
   text-decoration: none;
   font-weight: 600;
 }
+
+
+@media (max-width: 600px) {
+    .auth-card {
+        padding: 24px 20px;
+    }
+    .auth-card h2 {
+        font-size: 24px;
+    }
+    .auth-page {
+        padding: 20px 15px;
+    }
+}
+

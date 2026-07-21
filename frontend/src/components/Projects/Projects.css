@@ -12,3 +12,14 @@
 .projects-inner p{
   color: #555;
 }
+
+
+@media (max-width: 768px) {
+    .projects-page {
+        padding: 40px 20px;
+    }
+    .projects-inner h1 {
+        font-size: 32px;
+    }
+}
+
