@@ -34,9 +34,9 @@ function Navbar() {
       </ul>
 
       <div className="navbar-actions">
-        <button className="quote-btn">
+        <Link to="/quote" className="quote-btn">
           GET A QUOTE
-        </button>
+        </Link>
       </div>
     </nav>
   );

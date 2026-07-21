@@ -21,9 +21,9 @@ const protect = (req, res, next) => {
             next();
 
         } catch (error) {
-            return res.status(401).json({
-                message: "Invalid token"
-            });
+            console.error("Token verification error:", error);
+            const msg = process.env.NODE_ENV === "production" ? "Invalid token" : `Invalid token: ${error.message}`;
+            return res.status(401).json({ message: msg });
         }
     }
 

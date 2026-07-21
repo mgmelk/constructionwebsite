@@ -1,0 +1,35 @@
+.admin-form-page{
+  display:flex;
+  justify-content:center;
+  padding:40px;
+}
+.admin-form-card{
+  width:420px;
+  background:#fff;
+  padding:24px;
+  border-radius:8px;
+  box-shadow:0 4px 20px rgba(0,0,0,.06);
+}
+.admin-form h2{
+  margin-bottom:12px;
+}
+.admin-form input,
+.admin-form select{
+  width:100%;
+  padding:10px 12px;
+  margin-bottom:10px;
+  border:1px solid #ddd;
+  border-radius:6px;
+}
+.admin-error{color:#b00020}
+.admin-success{color:#0a8a0a}
+.admin-action-button{
+  display:inline-block;
+  padding:8px 12px;
+  margin-right:8px;
+  background:#f7b500;
+  color:#081924;
+  border-radius:6px;
+  text-decoration:none;
+}
+.admin-create-actions{margin-top:16px}

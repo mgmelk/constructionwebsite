@@ -4,6 +4,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import "./AuthPages.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +19,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/login", {
+      const response = await axios.post(`${API_URL}/api/auth/login`, {
         ...formData,
         email: formData.email.trim().toLowerCase(),
       });

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Dashboard.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function HRDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -17,7 +19,7 @@ function HRDashboard() {
     }
 
     axios
-      .get("http://localhost:5000/api/hr-managers", {
+      .get(`${API_URL}/api/hr-managers`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(() => {

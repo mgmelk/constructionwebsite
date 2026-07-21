@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Client = require("../models/Client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -47,38 +48,31 @@ const generateToken = (user) => {
 
 // Register User
 const register = async (req, res) => {
-
     try {
+        console.log("Register request body:", req.body);
 
-        const {
-            fullName,
-            email,
-            phone,
-            password,
-            role,
-            adminSecret
-        } = req.body;
+        const { fullName, companyName, email, phone, password, role, adminSecret, address } = req.body;
 
-        const normalizedEmail = email?.trim().toLowerCase();
+        // Basic validation
+        if (!fullName || !email || !phone || !password || (role?.trim().toLowerCase() !== "admin" && !companyName)) {
+            return res.status(400).json({ message: "fullName, companyName, email, phone and password are required" });
+        }
 
+        const normalizedEmail = email.trim().toLowerCase();
         const requestedRole = role?.trim().toLowerCase() === "admin" ? "admin" : "client";
 
         if (requestedRole === "admin") {
             const secret = process.env.ADMIN_REGISTRATION_SECRET || "Admin@123";
             if (!adminSecret || adminSecret !== secret) {
-                return res.status(403).json({
-                    message: "Admin registration requires a valid admin secret"
-                });
+                return res.status(403).json({ message: "Admin registration requires a valid admin secret" });
             }
         }
 
-        // Check existing user
+        // Check existing user or client by email
         const existingUser = await User.findOne({ email: normalizedEmail });
-
-        if (existingUser) {
-            return res.status(400).json({
-                message: "Email already exists"
-            });
+        const existingClient = await Client.findOne({ email: normalizedEmail });
+        if (existingUser || existingClient) {
+            return res.status(400).json({ message: "Email already exists" });
         }
 
         // Encrypt password
@@ -90,35 +84,46 @@ const register = async (req, res) => {
             email: normalizedEmail,
             phone,
             password: hashedPassword,
-            role: requestedRole
+            role: requestedRole,
         });
+
+        if (requestedRole === "client") {
+            try {
+                await Client.create({
+                    companyName: companyName.trim(),
+                    contactPerson: fullName.trim(),
+                    email: normalizedEmail,
+                    phone: phone.trim(),
+                    address: address?.trim() || "",
+                });
+            } catch (clientError) {
+                await User.deleteOne({ _id: user._id });
+                throw clientError;
+            }
+        }
+
+        const saved = await User.findById(user._id).select("-password");
+        console.log(`New public registration: ${saved.email} (${saved._id})`);
 
         const token = generateToken(user);
 
         res.status(201).json({
-
             message: "User registered successfully",
             token,
             user: {
-                id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                role: user.role
-            }
-
+                id: saved._id,
+                fullName: saved.fullName,
+                email: saved.email,
+                role: saved.role,
+            },
         });
-
-
-    } catch(error) {
-
-        res.status(500).json({
-
-            message: error.message
-
-        });
-
+    } catch (error) {
+        console.error("Register error:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+        res.status(500).json({ message: error.message });
     }
-
 };
 const login = async (req, res) => {
 

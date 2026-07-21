@@ -65,75 +65,50 @@ const getUserById = async(req,res)=>{
 
 // CREATE USER BY ADMIN
 
-const createUser = async(req,res)=>{
+const createUser = async (req, res) => {
+    try {
+        const { fullName, email, phone, password, role } = req.body;
 
-    try{
-
-        const {
-            fullName,
-            email,
-            phone,
-            password,
-            role
-        } = req.body;
-
-
-
-        const existingUser = await User.findOne({
-            email
-        });
-
-
-        if(existingUser){
-
-            return res.status(400).json({
-                message:"Email already exists"
-            });
-
+        // Validate
+        if (!fullName || !email || !phone || !password || !role) {
+            return res.status(400).json({ message: "fullName, email, phone, password and role are required" });
         }
 
+        const normalizedEmail = email.trim().toLowerCase();
 
+        const existingUser = await User.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
 
-        const hashedPassword =
-        await bcrypt.hash(password,10);
-
-
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
-
             fullName,
-            email,
+            email: normalizedEmail,
             phone,
-            password:hashedPassword,
-            role
-
+            password: hashedPassword,
+            role,
         });
 
-
+        console.log(`Admin created user: ${user.email} (${user._id}) role=${user.role}`);
 
         res.status(201).json({
-
-            message:"User created successfully",
-
-            user:{
-                id:user._id,
-                fullName:user.fullName,
-                email:user.email,
-                role:user.role
-            }
-
+            message: "User created successfully",
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                role: user.role,
+            },
         });
-
-
-
-    }catch(error){
-
-        res.status(500).json({
-            message:error.message
-        });
-
+    } catch (error) {
+        console.error("createUser error:", error);
+        if (error.code === 11000) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+        res.status(500).json({ message: error.message });
     }
-
 };
 
 

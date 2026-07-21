@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "../../components/admin/Sidebar/Sidebar";
-import Topbar from "../../components/admin/Topbar/Topbar";
+import Sidebar from "../../components/Admin/Sidebar/Sidebar";
+import Topbar from "../../components/Admin/Topbar/Topbar";
 import "./Users.css";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function Users() {
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ function Users() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -24,7 +28,23 @@ function Users() {
 
     if (!token || role !== "admin") {
       navigate("/admin/login");
+      return;
     }
+
+    const loadUsers = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/api/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(response.data || []);
+      } catch (err) {
+        setError(err.response?.data?.message || "Unable to load users.");
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
+    loadUsers();
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -36,7 +56,7 @@ function Users() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.post("http://localhost:5000/api/users", formData, {
+      const response = await axios.post(`${API_URL}/api/users`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -48,6 +68,16 @@ function Users() {
         password: "",
         role: "employee",
       });
+      setUsers((prev) => [
+        ...prev,
+        {
+          _id: response.data.user?.id || `${Date.now()}`,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          role: formData.role,
+        },
+      ]);
     } catch (err) {
       const serverMessage = err.response?.data?.message || "Unable to create user.";
       setError(serverMessage);
@@ -66,8 +96,8 @@ function Users() {
           <div className="admin-users-header">
             <div>
               <p className="admin-users-eyebrow">Admin panel</p>
-              <h2>Create a new user account</h2>
-              <p>Use this form to create accounts for employees, engineers, HR staff, or clients.</p>
+              <h2>Register a new user</h2>
+              <p>Only admins can register staff users. Clients should sign up through the homepage signup form.</p>
             </div>
           </div>
 
@@ -114,7 +144,7 @@ function Users() {
               </label>
 
               <label>
-                Role
+                User type
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -132,9 +162,41 @@ function Users() {
             {message ? <p className="admin-users-success">{message}</p> : null}
 
             <button type="submit" disabled={loading}>
-              {loading ? "Creating account..." : "Create user"}
+              {loading ? "Registering user..." : "Register user"}
             </button>
           </form>
+
+          <div className="admin-users-table-section">
+            <h3>All Users</h3>
+            {loadingUsers ? (
+              <p>Loading users...</p>
+            ) : users.length === 0 ? (
+              <p>No users found.</p>
+            ) : (
+              <div className="admin-users-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((user) => (
+                      <tr key={user._id}>
+                        <td>{user.fullName || "-"}</td>
+                        <td>{user.email || "-"}</td>
+                        <td>{user.phone || "-"}</td>
+                        <td>{user.role || "-"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>

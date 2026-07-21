@@ -51,6 +51,14 @@ function Sidebar() {
 
                     <FaProjectDiagram />
 
+                    <Link to="/admin/admins">Admins</Link>
+
+                </li>
+
+                <li>
+
+                    <FaProjectDiagram />
+
                     Projects
 
                 </li>
@@ -59,7 +67,7 @@ function Sidebar() {
 
                     <FaUserTie />
 
-                    Clients
+                    <Link to="/admin/clients">Clients</Link>
 
                 </li>
 
@@ -67,7 +75,7 @@ function Sidebar() {
 
                     <FaHardHat />
 
-                    Engineers
+                    <Link to="/admin/engineers">Engineers</Link>
 
                 </li>
 
@@ -75,7 +83,7 @@ function Sidebar() {
 
                     <FaUserCog />
 
-                    Employees
+                    <Link to="/admin/employees">Employees</Link>
 
                 </li>
 
@@ -83,7 +91,15 @@ function Sidebar() {
 
                     <FaClipboardList />
 
-                    HR Managers
+                    <Link to="/admin/hr-managers">HR Managers</Link>
+
+                </li>
+
+                <li>
+
+                    <FaEnvelope />
+
+                    <Link to="/admin/quotes">Quotes</Link>
 
                 </li>
 

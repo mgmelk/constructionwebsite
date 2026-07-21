@@ -28,7 +28,12 @@ function Topbar({ adminName }) {
                         <FaBell className="icon" />
                         <FaUserCircle className="profile" />
                     </>
-                ) : null}
+                ) : (
+                    <div className="admin-auth-links">
+                        <Link to="/admin/login" className="admin-auth-link">Login</Link>
+                        <Link to="/admin/register" className="admin-auth-link admin-auth-link-primary">Sign Up</Link>
+                    </div>
+                )}
             </div>
         </div>
     );

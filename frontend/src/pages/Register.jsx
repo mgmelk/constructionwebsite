@@ -4,15 +4,18 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import "./AuthPages.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
+    companyName: "",
     email: "",
     phone: "",
+    address: "",
     password: "",
-    role: "client",
   });
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -25,19 +28,18 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
-        ...formData,
+      const response = await axios.post(`${API_URL}/api/auth/register`, {
+        fullName: formData.fullName.trim(),
+        companyName: formData.companyName.trim(),
         email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
+        password: formData.password,
+        role: "client",
       });
 
       setMessage(response.data.message || "Account created successfully.");
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        password: "",
-        role: "client",
-      });
+      setFormData({ fullName: "", companyName: "", email: "", phone: "", address: "", password: "" });
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed.");
@@ -60,6 +62,13 @@ function Register() {
             required
           />
           <input
+            type="text"
+            placeholder="Company Name"
+            value={formData.companyName}
+            onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+            required
+          />
+          <input
             type="email"
             placeholder="Email"
             value={formData.email}
@@ -73,16 +82,12 @@ function Register() {
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             required
           />
-          <select
-            value={formData.role}
-            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-          >
-            <option value="admin">Admin</option>
-            <option value="hr_manager">HR Manager</option>
-            <option value="engineer">Engineer</option>
-            <option value="employee">Employee</option>
-            <option value="client">Client</option>
-          </select>
+          <input
+            type="text"
+            placeholder="Address (optional)"
+            value={formData.address}
+            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          />
           <div className="password-input-wrapper">
             <input
               type={showPassword ? "text" : "password"}

@@ -1,0 +1,102 @@
+.admin-dashboard-header {
+  margin-left: 260px;
+  padding: 30px 40px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  background: #f4f7fb;
+}
+
+.admin-dashboard-header-text {
+  max-width: 800px;
+}
+
+.admin-dashboard-header-text h1 {
+  margin: 0 0 8px;
+  color: #081924;
+}
+
+.admin-dashboard-header-text p {
+  margin: 0;
+  color: #556;
+  line-height: 1.6;
+}
+
+.admin-dashboard-links {
+  margin-left: 260px;
+  padding: 0 40px 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.admin-dashboard-link-card {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+  padding: 18px 16px;
+  background: white;
+  border-radius: 14px;
+  color: #081924;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-dashboard-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.admin-users-table-section {
+  margin-top: 36px;
+}
+
+.admin-users-table {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.admin-users-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 16px 14px;
+  border-bottom: 1px solid #e3eaef;
+  text-align: left;
+}
+
+.admin-users-table th {
+  background: #f8fafc;
+  color: #32425d;
+  font-weight: 700;
+}
+
+.admin-users-table tr:hover {
+  background: #f8f9fb;
+}
+
+.admin-users-table-header h3 {
+  margin: 0;
+  color: #081924;
+}
+
+@media (max-width: 900px) {
+  .admin-dashboard-header,
+  .admin-dashboard-links {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .admin-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

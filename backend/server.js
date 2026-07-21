@@ -7,8 +7,7 @@ const userRoutes = require("./routes/userRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const hrManagerRoutes = require("./routes/hrManagerRoutes");
-const engineerRoutes = require("./routes/engineerRoutes");
-
+const engineerRoutes = require("./routes/engineerRoutes");const quoteRoutes = require("./routes/quoteRoutes");
 // Load environment variables
 dotenv.config();
 
@@ -43,10 +42,24 @@ app.get("/api/test", (req, res) => {
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/quotes", quoteRoutes);
 app.use("/api/employees",employeeRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/hr-managers",hrManagerRoutes);
 app.use("/api/engineers",engineerRoutes);
+
+// Dev-only debug endpoint to list users (do not enable in production)
+if (process.env.NODE_ENV !== "production") {
+  const User = require("./models/User");
+  app.get("/api/debug/users", async (req, res) => {
+    try {
+      const users = await User.find().select("-password");
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+}
 
 // Port
 const PORT = process.env.PORT || 5000;
