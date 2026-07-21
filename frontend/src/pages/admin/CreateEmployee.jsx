@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./AdminForm.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function CreateEmployee() {
   const navigate = useNavigate();
@@ -30,7 +29,7 @@ function CreateEmployee() {
       if (!token) return navigate("/admin/login");
 
       const userResp = await axios.post(
-        `${API_URL}/api/users`,
+        `/api/users`,
         {
           fullName: form.fullName.trim(),
           email: form.email.trim().toLowerCase(),
@@ -44,7 +43,7 @@ function CreateEmployee() {
       const userId = userResp.data.user.id;
 
       await axios.post(
-        `${API_URL}/api/employees`,
+        `/api/employees`,
         {
           user: userId,
           fullName: form.fullName,

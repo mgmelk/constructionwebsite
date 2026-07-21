@@ -6,7 +6,6 @@ import Topbar from "../../components/Admin/Topbar/Topbar";
 import DashboardCards from "../../components/Admin/DashboardCards/DashboardCards";
 import "./Dashboard.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -27,7 +26,7 @@ function Dashboard() {
     }
 
     axios
-      .get(`${API_URL}/api/admin/dashboard`, {
+      .get(`/api/admin/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((response) => {

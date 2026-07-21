@@ -4,6 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(
   (response) => response,

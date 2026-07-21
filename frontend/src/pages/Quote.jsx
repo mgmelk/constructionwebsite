@@ -3,9 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "./Quote.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-console.log("QUOTE page using API_URL:", API_URL);
 
 function Quote() {
   const [formData, setFormData] = useState({
@@ -29,7 +27,7 @@ function Quote() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/quotes/request`, {
+      const response = await axios.post(`/api/quotes/request`, {
         ...formData,
         email: formData.email.trim().toLowerCase(),
         fullName: formData.fullName.trim(),
@@ -70,8 +68,8 @@ function Quote() {
             type="button"
             onClick={async () => {
               try {
-                const res = await fetch(`${API_URL}/api/test`);
-                const text = await res.text();
+                const res = await axios.get(`/api/test`);
+                const text = typeof res.data === 'string' ? res.data : JSON.stringify(res.data);
                 alert(`API Test ${res.status}: ${text}`);
               } catch (e) {
                 alert(`API Test failed: ${e.message}`);

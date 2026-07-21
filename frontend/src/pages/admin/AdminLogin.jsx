@@ -5,7 +5,6 @@ import axios from "axios";
 import AdminTopbar from "../../components/Admin/AdminTopbar/AdminTopbar";
 import "../AuthPages.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -20,7 +19,7 @@ function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
+      const response = await axios.post(`/api/auth/login`, {
         ...formData,
         email: formData.email.trim().toLowerCase(),
       });

@@ -4,7 +4,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import "./AuthPages.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function Register() {
   const navigate = useNavigate();
@@ -28,7 +27,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/register`, {
+      const response = await axios.post(`/api/auth/register`, {
         fullName: formData.fullName.trim(),
         companyName: formData.companyName.trim(),
         email: formData.email.trim().toLowerCase(),

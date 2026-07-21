@@ -5,7 +5,6 @@ import Sidebar from "../../components/Admin/Sidebar/Sidebar";
 import Topbar from "../../components/Admin/Topbar/Topbar";
 import "./Users.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function AdminHRManagers() {
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ function AdminHRManagers() {
 
     const loadHRManagers = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/users`, {
+        const response = await axios.get(`/api/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -5,7 +5,6 @@ import Sidebar from "../../components/Admin/Sidebar/Sidebar";
 import Topbar from "../../components/Admin/Topbar/Topbar";
 import "./Quotes.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function Quotes() {
   const navigate = useNavigate();
@@ -45,7 +44,7 @@ function Quotes() {
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`${API_URL}/api/quotes`, {
+      const response = await axios.get(`/api/quotes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setQuotes(response.data.quotes || []);
@@ -82,7 +81,7 @@ function Quotes() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        `${API_URL}/api/quotes/${selectedQuote._id}/estimate`,
+        `/api/quotes/${selectedQuote._id}/estimate`,
         {
           materialsCost: estimateData.materialsCost,
           laborCost: estimateData.laborCost,
@@ -112,7 +111,7 @@ function Quotes() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${API_URL}/api/quotes/${selectedQuote._id}/send`,
+        `/api/quotes/${selectedQuote._id}/send`,
         {
           subject: emailData.subject,
           message: emailData.message,
