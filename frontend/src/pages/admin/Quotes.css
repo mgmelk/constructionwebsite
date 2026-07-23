@@ -3,6 +3,7 @@
   padding: 32px;
   min-height: 100vh;
   background: #f4f7fb;
+  box-sizing: border-box;
 }
 
 .admin-quotes-header {
@@ -19,11 +20,13 @@
   letter-spacing: 1.6px;
   font-weight: 700;
   margin-bottom: 8px;
+  font-size: 13px;
 }
 
 .admin-quotes-header h1 {
   margin: 0;
   color: #081924;
+  font-size: 32px;
 }
 
 .admin-quotes-header p {
@@ -44,11 +47,19 @@
   border-radius: 18px;
   box-shadow: 0 12px 30px rgba(8, 25, 36, 0.08);
   padding: 24px;
+  box-sizing: border-box;
+}
+
+.admin-quotes-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-quotes-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 500px;
 }
 
 .admin-quotes-table th,
@@ -148,8 +159,29 @@
   font-weight: 700;
 }
 
-@media (max-width: 1080px) {
+/* Tablet & Mobile Breakpoints */
+@media (max-width: 1024px) {
+  .admin-quotes-page {
+    margin-left: 0;
+    padding: 20px;
+  }
+
   .admin-quotes-layout {
     grid-template-columns: 1fr;
+  }
+
+  .admin-quotes-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .quote-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-quotes-table-card,
+  .admin-quote-detail-card {
+    padding: 16px;
   }
 }

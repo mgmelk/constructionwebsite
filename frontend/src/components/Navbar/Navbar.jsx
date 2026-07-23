@@ -26,11 +26,16 @@ function Navbar() {
       </button>
 
       <ul className={`nav-links ${menuOpen ? "open" : ""}`}>
-        <li className="active"><a href="#home">Home</a></li>
-        <li><a href="#about">About Us</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><Link to="/projects">Projects</Link></li>
-        <li><Link to="/contact">Contact</Link></li>
+        <li className="active"><a href="#home" onClick={() => setMenuOpen(false)}>Home</a></li>
+        <li><a href="#about" onClick={() => setMenuOpen(false)}>About Us</a></li>
+        <li><a href="#services" onClick={() => setMenuOpen(false)}>Services</a></li>
+        <li><Link to="/projects" onClick={() => setMenuOpen(false)}>Projects</Link></li>
+        <li><Link to="/contact" onClick={() => setMenuOpen(false)}>Contact</Link></li>
+        <li className="mobile-quote-item">
+          <Link to="/quote" className="quote-btn mobile-quote-btn" onClick={() => setMenuOpen(false)}>
+            GET A QUOTE
+          </Link>
+        </li>
       </ul>
 
       <div className="navbar-actions">

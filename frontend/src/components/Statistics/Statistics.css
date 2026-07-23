@@ -1,107 +1,92 @@
-.statistics{
-
-    background:#081924;
-
-    padding:100px 80px;
-
-    color:white;
-
-    text-align:center;
-
+.statistics {
+  background: #081924;
+  padding: 80px 60px;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.statistics-header span{
-
-    color:#f7b500;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    letter-spacing:2px;
-
+.statistics-header span {
+  color: #f7b500;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 
-.statistics-header h2{
-
-    margin-top:20px;
-
-    font-size:45px;
-
-    margin-bottom:60px;
-
+.statistics-header h2 {
+  margin-top: 15px;
+  font-size: 40px;
+  margin-bottom: 50px;
+  color: white;
 }
 
-.statistics-container{
-
-    display:grid;
-
-    grid-template-columns:repeat(4,1fr);
-
-    gap:30px;
-
+.statistics-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }
 
-.stat-card{
-
-    background:#102635;
-
-    padding:40px 20px;
-
-    border-radius:10px;
-
-    transition:.3s;
-
+.stat-card {
+  background: #102635;
+  padding: 36px 20px;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
 }
 
-.stat-card:hover{
-
-    transform:translateY(-10px);
-
+.stat-card:hover {
+  transform: translateY(-8px);
 }
 
-.stat-icon{
-
-    font-size:50px;
-
-    color:#f7b500;
-
-    margin-bottom:20px;
-
+.stat-icon {
+  font-size: 44px;
+  color: #f7b500;
+  margin-bottom: 16px;
 }
 
-.stat-card h1{
-
-    font-size:55px;
-
-    margin-bottom:15px;
-
+.stat-card h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: white;
 }
 
-.stat-card p{
-
-    font-size:20px;
-
-    color:#ddd;
-
+.stat-card p {
+  font-size: 18px;
+  color: #ddd;
 }
 
+/* Tablet */
 @media (max-width: 1024px) {
-    .statistics-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .statistics-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statistics {
+    padding: 60px 32px;
+  }
+
+  .statistics-header h2 {
+    font-size: 32px;
+    margin-bottom: 36px;
+  }
 }
 
+/* Mobile */
 @media (max-width: 600px) {
-    .statistics-container {
-        grid-template-columns: 1fr;
-    }
-    .statistics {
-        padding: 60px 30px;
-    }
-    .statistics-header h2 {
-        font-size: 32px;
-        margin-bottom: 40px;
-    }
-}
+  .statistics-container {
+    grid-template-columns: 1fr;
+  }
 
+  .statistics {
+    padding: 40px 20px;
+  }
+
+  .statistics-header h2 {
+    font-size: 26px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card h1 {
+    font-size: 36px;
+  }
+}

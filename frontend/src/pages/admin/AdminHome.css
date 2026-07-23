@@ -3,6 +3,7 @@
   padding: 40px;
   min-height: calc(100vh - 80px);
   background: #f4f7fb;
+  box-sizing: border-box;
 }
 
 .admin-home-card {
@@ -12,14 +13,28 @@
   border-radius: 18px;
   padding: 40px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
 .admin-home-card h1 {
   margin-bottom: 16px;
   color: #081924;
+  font-size: 32px;
 }
 
 .admin-home-card p {
   color: #4f5f75;
   line-height: 1.7;
+}
+
+/* Tablet & Mobile Breakpoint */
+@media (max-width: 1024px) {
+  .admin-home-page {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .admin-home-card {
+    padding: 24px;
+  }
 }

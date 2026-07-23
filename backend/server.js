@@ -24,10 +24,21 @@ app.use(express.json());
 // Import routes
 const authRoutes = require("./routes/authRoutes");
 
-// Home route
-app.get("/", (req, res) => {
-  res.send("Construction Company Backend is Running...");
-});
+const path = require("path");
+const fs = require("fs");
+
+const frontendDist = path.join(__dirname, "../frontend/dist");
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get("*", (req, res, next) => {
+    if (req.path.startsWith("/api")) return next();
+    res.sendFile(path.join(frontendDist, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("Construction Company Backend is Running...");
+  });
+}
 app.get("/api/test", (req, res) => {
 
     res.json({

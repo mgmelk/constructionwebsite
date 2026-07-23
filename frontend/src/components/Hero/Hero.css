@@ -1,160 +1,154 @@
-.hero{
-
-    width:100%;
-    height:90vh;
-
-    background-size:cover;
-    background-position:center;
-    background-repeat:no-repeat;
-
-    position:relative;
-
+.hero {
+  width: 100%;
+  min-height: 85vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
-.overlay{
-
-    width:100%;
-    height:100%;
-
-    background:rgba(0,0,0,.45);
-
-    display:flex;
-    align-items:center;
-
+.overlay {
+  width: 100%;
+  height: 100%;
+  min-height: 85vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  padding: 60px 0;
+  box-sizing: border-box;
 }
 
-.hero-content{
-
-    width:45%;
-
-    margin-left:70px;
-
-    color:white;
-
+.hero-content {
+  width: 90%;
+  max-width: 780px;
+  margin-left: 60px;
+  color: white;
+  text-align: left;
 }
 
-.line{
-
-    width:60px;
-    height:4px;
-
-    background:#f7b500;
-
-    margin-bottom:20px;
-
+.line {
+  width: 60px;
+  height: 4px;
+  background: #f7b500;
+  margin-bottom: 20px;
 }
 
-.hero-content h4{
-
-    color:#f7b500;
-
-    font-size:24px;
-
-    margin-bottom:20px;
-
-    letter-spacing:1px;
-
+.hero-content h4 {
+  color: #f7b500;
+  font-size: 22px;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+  font-weight: 600;
 }
 
-.hero-content h1{
-
-    font-size:85px;
-
-    line-height:90px;
-
-    font-weight:800;
-
-    margin-bottom:30px;
-
+.hero-content h1 {
+  font-size: 64px;
+  line-height: 1.15;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: white;
 }
 
-.white{
-
-    color:white;
-
+.white {
+  color: white;
 }
 
-.yellow{
-
-    color:#f7b500;
-
+.yellow {
+  color: #f7b500;
 }
 
-.hero-content p{
-
-    font-size:24px;
-
-    line-height:40px;
-
-    width:90%;
-
-    margin-bottom:40px;
-
+.hero-content p {
+  font-size: 20px;
+  line-height: 1.6;
+  width: 90%;
+  max-width: 650px;
+  margin-bottom: 36px;
+  color: #e0e6ed;
 }
 
-.projects-btn{
-
-    background:#f7b500;
-
-    color:black;
-
-    border:none;
-
-    padding:18px 40px;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    transition:.3s;
-
+.projects-btn {
+  background: #f7b500;
+  color: black;
+  border: none;
+  padding: 16px 36px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border-radius: 4px;
 }
 
-.projects-btn:hover{
-
-    background:white;
-
+.projects-btn:hover {
+  background: white;
 }
 
+/* Tablet */
 @media (max-width: 1024px) {
-    .hero-content {
-        width: 80%;
-        margin-left: 40px;
-    }
-    .hero-content h1 {
-        font-size: 60px;
-        line-height: 70px;
-    }
+  .hero-content {
+    margin-left: 40px;
+    width: 85%;
+  }
+
+  .hero-content h1 {
+    font-size: 48px;
+  }
+
+  .hero-content p {
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 768px) {
-    .hero-content {
-        width: 90%;
-        margin-left: 20px;
-        text-align: center;
-    }
-    .line {
-        margin: 0 auto 20px auto;
-    }
-    .hero-content h1 {
-        font-size: 40px;
-        line-height: 50px;
-        margin-bottom: 20px;
-    }
-    .hero-content p {
-        font-size: 18px;
-        line-height: 28px;
-        width: 100%;
-        margin-bottom: 30px;
-    }
-    .hero {
-        height: auto;
-        min-height: 80vh;
-    }
-    .overlay {
-        padding: 60px 0;
-    }
+  .hero-content {
+    margin: 0 auto;
+    width: 90%;
+    text-align: center;
+  }
+
+  .line {
+    margin: 0 auto 20px auto;
+  }
+
+  .hero-content h1 {
+    font-size: 38px;
+    margin-bottom: 20px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    width: 100%;
+    margin: 0 auto 28px auto;
+  }
+
+  .hero {
+    min-height: 70vh;
+  }
+
+  .overlay {
+    min-height: 70vh;
+    padding: 40px 0;
+  }
 }
 
+/* Mobile */
+@media (max-width: 480px) {
+  .hero-content h4 {
+    font-size: 18px;
+  }
+
+  .hero-content h1 {
+    font-size: 30px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .projects-btn {
+    padding: 14px 28px;
+    font-size: 15px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
