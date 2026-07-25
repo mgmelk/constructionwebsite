@@ -56,11 +56,8 @@ function Sidebar() {
                 </li>
 
                 <li>
-
                     <FaProjectDiagram />
-
-                    Projects
-
+                    <Link to="/admin/projects">Projects</Link>
                 </li>
 
                 <li>

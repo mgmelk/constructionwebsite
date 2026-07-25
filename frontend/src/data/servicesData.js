@@ -1,90 +1,112 @@
 export const services = [
   {
     slug: "wholesale-construction-materials-and-equipments",
-    title: "Wholesale Construction Materials and Equipments",
+    title: "Wholesale Construction Materials and Equipment",
+    categoryBadge: "WHOLESALE SUPPLY & EQUIPMENT",
     shortDescription:
-      "Reliable supply of construction materials, tools, and heavy equipment for projects of every scale.",
-    heroTitle: "Construction Materials and Equipment Supply",
+      "Reliable supply of high-grade construction materials, tools, and heavy machinery for projects of every scale.",
+    heroTitle: "Wholesale Construction Materials and Equipment",
     intro:
-      "WEMASTER Construction and Engineering PLC provides dependable sourcing and delivery of quality construction materials and equipment to support residential, commercial, industrial, and infrastructure projects across Ethiopia.",
-    highlights: [
-      "High-quality cement, steel, pipes, fittings, and finishing materials",
-      "Procurement support for large-scale and fast-track construction projects",
-      "Timely delivery and competitive pricing for contractors and developers",
-      "Reliable sourcing for both public and private sector clients"
+      "At WEMASTER Construction PLC, we are committed to supplying high-quality construction materials, modern equipment, and reliable tools that support projects of every size—from residential homes to large commercial and industrial developments.",
+    descriptionParagraphs: [
+      "At WEMASTER Construction PLC, we are committed to supplying high-quality construction materials, modern equipment, and reliable tools that support projects of every size—from residential homes to large commercial and industrial developments.",
+      "We partner with trusted manufacturers and suppliers to ensure that every product meets industry standards for quality, durability, and safety. Our extensive inventory includes cement, steel products, aggregates, roofing materials, electrical and plumbing supplies, finishing materials, heavy machinery, and a wide range of construction tools.",
+      "Whether you are a contractor, developer, engineer, or individual builder, our experienced team is ready to help you select the right materials and equipment for your project. We focus on timely delivery, competitive pricing, and exceptional customer service to keep your construction schedule on track."
     ],
-    benefits: [
-      "One-stop supply solution for contractors and project managers",
-      "Quality-focused sourcing with consistent standards",
-      "Flexible delivery support for remote and urban project locations"
+    serviceListTitle: "Why Choose WEMASTER Construction PLC?",
+    whyChooseList: [
+      "Premium-quality construction materials from trusted suppliers.",
+      "Modern heavy equipment and machinery available for different project needs.",
+      "Competitive pricing with transparent quotations.",
+      "Reliable and timely delivery services.",
+      "Professional technical support and expert recommendations.",
+      "Commitment to safety, quality, and customer satisfaction."
     ],
-    note:
-      "Our procurement approach is built around reliability, efficiency, and long-term value for every client."
+    closingText:
+      "At WEMASTER Construction PLC, our goal is to provide dependable construction solutions that help clients complete their projects efficiently, safely, and within budget. We take pride in building long-term relationships through integrity, excellence, and outstanding service."
   },
   {
     slug: "electrical-and-electromechanical-works",
     title: "Electrical and Electromechanical Works",
+    categoryBadge: "ENGINEERING & ELECTROMECHANICAL",
     shortDescription:
-      "End-to-end electrical installations, maintenance, and electromechanical solutions for modern infrastructure.",
-    heroTitle: "Electrical and Electromechanical Solutions",
+      "Complete electrical installations, power systems and electromechanical services.",
+    heroTitle: "Electrical and Electromechanical Works",
     intro:
-      "We deliver quality electrical and electromechanical services that help power facilities, support industrial operations, and strengthen modern buildings.",
-    highlights: [
-      "Power distribution systems, lighting, and wiring installations",
-      "Maintenance and upgrading of electrical and mechanical systems",
-      "Support for industrial plants, commercial properties, and infrastructure sites",
-      "Safe, efficient, and standards-based execution"
+      "WEMASTER Construction PLC provides reliable electrical and electromechanical solutions for residential, commercial, industrial, and infrastructure projects.",
+    descriptionParagraphs: [
+      "WEMASTER Construction PLC provides reliable electrical and electromechanical solutions for residential, commercial, industrial, and infrastructure projects. Our experienced engineers and technicians deliver safe, efficient, and standards-compliant installations that ensure dependable performance and long-term reliability.",
+      "Our services include electrical system design, power distribution, lighting installation, cable laying, switchgear installation, control panels, backup power systems, transformers, generators, and the installation and maintenance of electromechanical equipment. We also provide testing, commissioning, troubleshooting, and preventive maintenance to ensure every system operates at peak efficiency.",
+      "Every project is completed using high-quality materials, modern technology, and industry best practices while prioritizing safety, energy efficiency, and client satisfaction."
     ],
-    benefits: [
-      "Experienced technical teams with strong project coordination",
-      "Solutions designed for reliability and long-term performance",
-      "Service coverage for new installations and ongoing maintenance"
+    serviceListTitle: "Our Electrical & Electromechanical Services",
+    whyChooseList: [
+      "Complete electrical installations for residential, commercial, and industrial buildings.",
+      "Power distribution and electrical control systems.",
+      "Lighting design and installation.",
+      "Generator, transformer, and backup power system installation.",
+      "Electromechanical equipment installation and maintenance.",
+      "Testing, commissioning, and preventive maintenance.",
+      "Electrical upgrades, repairs, and system troubleshooting.",
+      "Compliance with national and international safety standards."
     ],
-    note:
-      "Our work is aligned with national development priorities in energy, infrastructure, and industrial growth."
+    closingText:
+      "At WEMASTER Construction PLC, we are dedicated to delivering dependable electrical and electromechanical solutions that power your projects safely, efficiently, and sustainably."
   },
   {
     slug: "software-development",
     title: "Software Development",
+    categoryBadge: "DIGITAL & ENTERPRISE TECHNOLOGY",
     shortDescription:
       "Custom digital solutions for construction management, operations, and business efficiency.",
-    heroTitle: "Digital Solutions for Construction and Business",
+    heroTitle: "Software Development",
     intro:
-      "WEMASTER develops practical software solutions that help organizations manage projects, automate processes, and improve productivity in a fast-moving construction environment.",
-    highlights: [
-      "Custom applications for project tracking and reporting",
-      "Construction management and operational workflow systems",
-      "Automation tools for procurement, scheduling, and documentation",
-      "Scalable software built for growing businesses"
+      "WEMASTER Construction PLC delivers innovative software solutions designed to improve construction management, automate business processes, and streamline daily operations.",
+    descriptionParagraphs: [
+      "WEMASTER Construction PLC delivers innovative software solutions designed to improve construction management, automate business processes, and streamline daily operations. We develop secure, scalable, and user-friendly applications that help organizations increase productivity, enhance collaboration, and make data-driven decisions.",
+      "Our software development services include custom web applications, mobile applications, construction management systems, project tracking platforms, inventory management, human resource systems, financial management tools, and client portals. We integrate modern technologies to ensure reliable performance, security, and flexibility as your business grows.",
+      "From planning and design to development, testing, deployment, and ongoing support, our experienced development team works closely with clients to create solutions tailored to their specific business needs."
     ],
-    benefits: [
-      "Solutions tailored to your operational needs",
-      "Improved visibility, coordination, and decision-making",
-      "Modern digital tools designed for long-term use"
+    serviceListTitle: "Our Software Development Services",
+    whyChooseList: [
+      "Custom web and mobile application development.",
+      "Construction project management systems.",
+      "Employee, client, and contractor management platforms.",
+      "Inventory, procurement, and asset management systems.",
+      "Business process automation and workflow solutions.",
+      "Database design, API development, and system integration.",
+      "Cloud-based applications and secure data management.",
+      "Software maintenance, upgrades, and technical support."
     ],
-    note:
-      "We combine construction industry understanding with modern technology to deliver meaningful digital impact."
+    closingText:
+      "At WEMASTER Construction PLC, we combine industry expertise with modern technology to deliver software solutions that simplify operations, improve efficiency, and support the successful execution of construction and business projects."
   },
   {
     slug: "building-design-and-finishing-works",
     title: "Building Design and Finishing Works",
+    categoryBadge: "ARCHITECTURE & FINISHING",
     shortDescription:
       "Architectural planning, interior design, and finishing services that bring function and beauty together.",
-    heroTitle: "Design and Finishing Excellence",
+    heroTitle: "Building Design and Finishing Works",
     intro:
-      "Our design and finishing team creates attractive, functional, and well-executed spaces for homes, offices, and commercial properties.",
-    highlights: [
-      "Interior design and space planning",
-      "Finishing works for walls, floors, ceilings, and fittings",
-      "Collaborative design support from concept to completion",
-      "Attention to quality, elegance, and durability"
+      "WEMASTER Construction PLC provides comprehensive building design and finishing services that transform ideas into functional, modern, and visually appealing spaces.",
+    descriptionParagraphs: [
+      "WEMASTER Construction PLC provides comprehensive building design and finishing services that transform ideas into functional, modern, and visually appealing spaces. Our team of architects, engineers, and construction professionals works closely with clients to create designs that meet their vision, budget, and project requirements while maintaining the highest standards of quality and sustainability.",
+      "We offer architectural planning, structural design coordination, interior and exterior design, space planning, and complete finishing solutions for residential, commercial, industrial, and institutional buildings. From concept development to the final finishing touches, we ensure every project is completed with precision, creativity, and attention to detail.",
+      "Our finishing services include flooring, ceiling installation, painting, tiling, plastering, partitioning, cabinetry, doors and windows, lighting integration, and decorative finishes. Every detail is carefully executed to deliver attractive, durable, and comfortable environments."
     ],
-    benefits: [
-      "Thoughtful designs that balance aesthetics and practicality",
-      "Professional finishing with careful quality control",
-      "A complete approach for creating polished and lasting spaces"
+    serviceListTitle: "Our Building Design & Finishing Services",
+    whyChooseList: [
+      "Architectural planning and building design.",
+      "Interior and exterior design solutions.",
+      "Space planning and 3D design visualization.",
+      "Flooring, tiling, painting, and ceiling installation.",
+      "Plastering, partitioning, and decorative finishing.",
+      "Doors, windows, cabinetry, and custom woodwork.",
+      "Building renovation, remodeling, and fit-out services.",
+      "Project supervision and quality assurance."
     ],
-    note:
-      "We aim to deliver spaces that are both visually appealing and built to perform."
+    closingText:
+      "At WEMASTER Construction PLC, we are committed to delivering innovative building designs and exceptional finishing works that combine functionality, aesthetics, and long-lasting quality. Our goal is to create spaces that exceed client expectations and stand the test of time."
   }
 ];

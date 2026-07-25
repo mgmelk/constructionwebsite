@@ -45,9 +45,10 @@
 }
 
 .stat-card h1 {
-  font-size: 48px;
+  font-size: 32px;
   margin-bottom: 10px;
   color: white;
+  word-break: break-word;
 }
 
 .stat-card p {

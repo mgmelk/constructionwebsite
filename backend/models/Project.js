@@ -1,5 +1,17 @@
 const mongoose = require("mongoose");
 
+const imageSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  name: { type: String, default: "Project Image" },
+  uploadedAt: { type: Date, default: Date.now },
+});
+
+const documentSchema = new mongoose.Schema({
+  url: { type: String, required: true },
+  name: { type: String, required: true },
+  uploadedAt: { type: Date, default: Date.now },
+});
+
 const projectSchema = new mongoose.Schema(
   {
     projectName: {
@@ -11,21 +23,34 @@ const projectSchema = new mongoose.Schema(
     projectCode: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
 
     client: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
 
     projectManager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
+
+    engineers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    employees: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 
     description: {
       type: String,
@@ -34,22 +59,23 @@ const projectSchema = new mongoose.Schema(
 
     location: {
       type: String,
-      required: true,
+      default: "",
     },
 
     budget: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
 
     startDate: {
       type: Date,
-      required: true,
+      default: Date.now,
     },
 
     endDate: {
       type: Date,
+      default: null,
     },
 
     progress: {
@@ -61,20 +87,17 @@ const projectSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "Planning",
-        "In Progress",
-        "On Hold",
-        "Completed",
-        "Cancelled",
-      ],
+      enum: ["Planning", "In Progress", "On Hold", "Completed", "Cancelled"],
       default: "Planning",
     },
+
+    images: [imageSchema],
+
+    documents: [documentSchema],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
   },
   {

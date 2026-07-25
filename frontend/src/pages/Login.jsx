@@ -85,6 +85,9 @@ function Login() {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+          <div className="auth-forgot-link">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
           {error ? <p className="auth-error">{error}</p> : null}
           <button type="submit" disabled={loading}>
             {loading ? "Signing In..." : "Sign In"}

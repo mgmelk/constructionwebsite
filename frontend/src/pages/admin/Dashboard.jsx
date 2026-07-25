@@ -60,6 +60,7 @@ function Dashboard() {
         </Link>
       </div>
       <div className="admin-dashboard-links">
+        <Link to="/admin/projects" className="admin-dashboard-link-card">Projects</Link>
         <Link to="/admin/users" className="admin-dashboard-link-card">Users</Link>
         <Link to="/admin/clients" className="admin-dashboard-link-card">Clients</Link>
         <Link to="/admin/employees" className="admin-dashboard-link-card">Employees</Link>

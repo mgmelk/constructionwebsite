@@ -1,17 +1,37 @@
+const path = require("path");
+const dotenv = require("dotenv");
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+
 const mongoose = require("mongoose");
+
+// Disable command buffering globally so queries fail immediately instead of hanging 10 seconds
+mongoose.set("bufferCommands", false);
+mongoose.set("bufferTimeoutMS", 3000);
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI);
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 4000,
+      connectTimeoutMS: 5000,
+    });
 
-    const dbName = conn.connection?.db?.databaseName || process.env.MONGO_URI;
-    console.log(`MongoDB Connected -> ${dbName}`);
+    const dbName = conn.connection?.db?.databaseName || "construction";
+    console.log(`MongoDB Connected Successfully -> Database: "${dbName}"`);
   } catch (error) {
-    console.error("Database connection failed:", error.message);
-    // Do not exit the process here so the server can still start for debugging.
-    // Route handlers should handle missing DB connections and return 5xx errors.
-    // If you prefer the old behavior (exit on DB failure), restore process.exit(1).
+    console.error("\n=======================================================");
+    console.error("❌ MONGODB CONNECTION ERROR:");
+    console.error(`   ${error.message}`);
+    console.error("👉 Solution: Whitelist your IP in MongoDB Atlas (https://cloud.mongodb.com -> Security -> Network Access -> Add Current IP)");
+    console.error("=======================================================\n");
   }
 };
+
+mongoose.connection.on("disconnected", () => {
+  console.log("MongoDB disconnected! Attempting reconnect...");
+});
+
+mongoose.connection.on("error", (err) => {
+  console.error("MongoDB connection error:", err.message);
+});
 
 module.exports = connectDB;

@@ -11,9 +11,6 @@ import "./Home.css";
 function Home() {
   return (
     <>
-      <div className="top-auth-strip">
-        <AuthBar />
-      </div>
       <Navbar />
       <Hero />
       <Features />

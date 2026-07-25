@@ -24,6 +24,9 @@ import HRDashboard from "./pages/hr/Dashboard";
 import EngineerDashboard from "./pages/engineer/Dashboard";
 import EmployeeDashboard from "./pages/employee/Dashboard";
 import ClientDashboard from "./pages/client/Dashboard";
+import AdminProjects from "./pages/admin/Projects";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
     return (
@@ -35,12 +38,15 @@ function App() {
                 <Route path="/services/:slug" element={<ServiceDetail />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password/:token" element={<ResetPassword />} />
                 <Route path="/quote" element={<Quote />} />
                 <Route path="/admin" element={<AdminHome />} />
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route path="/admin/register" element={<AdminRegister />} />
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/users" element={<Users />} />
+                <Route path="/admin/projects" element={<AdminProjects />} />
                 <Route path="/admin/admins" element={<Admins />} />
                 <Route path="/admin/clients" element={<AdminClients />} />
                 <Route path="/admin/engineers" element={<AdminEngineers />} />

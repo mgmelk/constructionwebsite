@@ -69,6 +69,12 @@
   color: #081924;
   font-weight: 700;
   cursor: pointer;
+  font-size: 15px;
+  transition: background 0.2s;
+}
+
+.auth-form button:hover {
+  background: #e0a400;
 }
 
 .auth-form button:disabled {
@@ -80,17 +86,26 @@
   color: #c0392b;
   font-size: 14px;
   margin: 0;
+  background: #fdf0ed;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 4px solid #c0392b;
 }
 
 .auth-success {
   color: #2e7d32;
   font-size: 14px;
-  margin: 0;
+  background: #e8f5e9;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border-left: 4px solid #2e7d32;
+  line-height: 1.5;
 }
 
 .auth-link-text {
   margin-top: 16px;
   text-align: center;
+  font-size: 14px;
 }
 
 .auth-link-text a {
@@ -99,16 +114,46 @@
   font-weight: 600;
 }
 
-
-@media (max-width: 600px) {
-    .auth-card {
-        padding: 24px 20px;
-    }
-    .auth-card h2 {
-        font-size: 24px;
-    }
-    .auth-page {
-        padding: 20px 15px;
-    }
+.auth-forgot-link {
+  text-align: right;
+  margin-top: -4px;
+  margin-bottom: 4px;
 }
 
+.auth-forgot-link a {
+  color: #f7b500;
+  font-size: 14px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-forgot-link a:hover {
+  text-decoration: underline;
+}
+
+.auth-btn-secondary {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 12px 14px;
+  border: 1px solid #081924;
+  border-radius: 8px;
+  background: #081924;
+  color: #ffffff !important;
+  font-weight: 600;
+  text-decoration: none;
+  margin-top: 12px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 24px 20px;
+  }
+  .auth-card h2 {
+    font-size: 24px;
+  }
+  .auth-page {
+    padding: 20px 15px;
+  }
+}

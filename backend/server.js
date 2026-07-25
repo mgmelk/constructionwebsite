@@ -1,15 +1,16 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const adminRoutes = require("./routes/adminRoutes");
 const userRoutes = require("./routes/userRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const clientRoutes = require("./routes/clientRoutes");
 const hrManagerRoutes = require("./routes/hrManagerRoutes");
-const engineerRoutes = require("./routes/engineerRoutes");const quoteRoutes = require("./routes/quoteRoutes");
-// Load environment variables
-dotenv.config();
+const engineerRoutes = require("./routes/engineerRoutes");
+const quoteRoutes = require("./routes/quoteRoutes");
 
 // Connect to MongoDB
 connectDB();
@@ -30,7 +31,7 @@ const fs = require("fs");
 const frontendDist = path.join(__dirname, "../frontend/dist");
 if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
-  app.get("*", (req, res, next) => {
+  app.get("/{*splat}", (req, res, next) => {
     if (req.path.startsWith("/api")) return next();
     res.sendFile(path.join(frontendDist, "index.html"));
   });
@@ -47,6 +48,20 @@ app.get("/api/test", (req, res) => {
 
     });
 
+});
+
+const mongoose = require("mongoose");
+
+// Database readiness middleware for API routes
+app.use("/api", (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    console.log(`[API Warning] Database connection not ready (readyState: ${mongoose.connection.readyState}). Re-triggering connectDB()...`);
+    connectDB();
+    return res.status(503).json({
+      message: "Database connection failed. Please ensure your IP address is whitelisted in MongoDB Atlas Network Access."
+    });
+  }
+  next();
 });
 
 // Authentication routes
