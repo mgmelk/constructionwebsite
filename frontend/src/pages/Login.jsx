@@ -30,15 +30,18 @@ function Login() {
       }
 
       localStorage.setItem("token", token);
-      localStorage.setItem("userRole", user?.role);
-      localStorage.setItem("adminName", user?.fullName || "User");
+      localStorage.setItem("userRole", user?.role || "client");
+      const displayName = user?.fullName || user?.name || user?.username || "User";
+      localStorage.setItem("adminName", displayName);
+      localStorage.setItem("userName", displayName);
+      localStorage.setItem("userEmail", user?.email || formData.email.trim().toLowerCase());
 
       if (user?.role === "admin") {
         navigate("/admin/dashboard", { replace: true });
       } else if (user?.role === "hr_manager") {
         navigate("/hr/dashboard", { replace: true });
       } else if (user?.role === "engineer") {
-        navigate("/engineer/dashboard", { replace: true });
+        navigate("/", { replace: true });
       } else if (user?.role === "employee") {
         navigate("/employee/dashboard", { replace: true });
       } else if (user?.role === "client") {
@@ -47,9 +50,9 @@ function Login() {
         setError("Only admin, HR manager, engineer, employee, or client accounts can access the dashboard.");
       }
     } catch (err) {
-      const message = err.response?.data?.message || "Login failed. Please try again.";
+      const message = err.response?.data?.message || err.message || "Login failed. Please try again.";
       setError(message);
-      console.error("Login error:", message);
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }

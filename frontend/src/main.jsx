@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "";
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(
@@ -12,20 +12,23 @@ axios.interceptors.response.use(
   (error) => {
     const status = error?.response?.status;
     const msg = error?.response?.data?.message || '';
+
     if (status === 401) {
-      // clear auth and redirect to admin login
-      localStorage.removeItem('token');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('adminName');
-      if (typeof window !== 'undefined') {
-        // show short notice in dev to help debugging
-        if (msg.toLowerCase().includes('expired')) {
-          // eslint-disable-next-line no-alert
-          alert('Session expired — please sign in again.');
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+      const isProtectedDashboard = currentPath.startsWith('/admin') || currentPath.startsWith('/hr') || currentPath.startsWith('/engineer') || currentPath.startsWith('/employee') || currentPath.startsWith('/client');
+
+      if (isProtectedDashboard) {
+        const shouldRedirect = !localStorage.getItem('token') || !localStorage.getItem('userRole');
+        if (shouldRedirect) {
+          if (currentPath.startsWith('/admin')) {
+            window.location.href = '/admin/login';
+          } else {
+            window.location.href = '/login';
+          }
         }
-        window.location.href = '/admin/login';
       }
     }
+
     return Promise.reject(error);
   }
 );

@@ -75,7 +75,7 @@ function AdminProjects() {
       return;
     }
     fetchData();
-  }, [navigate]);
+  }, [navigate, role, token]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -166,6 +166,66 @@ function AdminProjects() {
   };
 
   // Submit Add/Edit Form
+  const compressSingleImage = (imgItem) => {
+    return new Promise((resolve) => {
+      let url = "";
+      let name = "Project Image";
+      let uploadedAt = new Date();
+
+      if (typeof imgItem === "string") {
+        url = imgItem;
+      } else if (imgItem && typeof imgItem === "object") {
+        url = imgItem.url || "";
+        name = imgItem.name || "Project Image";
+        uploadedAt = imgItem.uploadedAt || new Date();
+      }
+
+      if (!url || !url.startsWith("data:image")) {
+        resolve({ url, name, uploadedAt });
+        return;
+      }
+
+      if (url.length < 100000) {
+        resolve({ url, name, uploadedAt });
+        return;
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const MAX_WIDTH = 500;
+        const MAX_HEIGHT = 500;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedUrl = canvas.toDataURL("image/jpeg", 0.5);
+        resolve({ url: compressedUrl, name, uploadedAt });
+      };
+
+      img.onerror = () => {
+        resolve({ url, name, uploadedAt });
+      };
+
+      img.src = url;
+    });
+  };
+
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setError("");
@@ -177,14 +237,20 @@ function AdminProjects() {
     }
 
     try {
+      const compressedImages = await Promise.all((formData.images || []).map(compressSingleImage));
+      const payload = {
+        ...formData,
+        images: compressedImages,
+      };
+
       if (editingProject) {
-        const res = await axios.put(`/api/projects/${editingProject._id}`, formData, {
+        const res = await axios.put(`/api/projects/${editingProject._id}`, payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSuccess("Project updated successfully!");
         setProjects(projects.map((p) => (p._id === editingProject._id ? res.data.project : p)));
       } else {
-        const res = await axios.post("/api/projects", formData, {
+        const res = await axios.post("/api/projects", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSuccess("Project created successfully!");
@@ -193,7 +259,7 @@ function AdminProjects() {
       setShowFormModal(false);
       resetForm();
     } catch (err) {
-      setError(err.response?.data?.message || "Operation failed.");
+      setError(err.response?.data?.message || err.message || "Operation failed.");
     }
   };
 
@@ -234,12 +300,16 @@ function AdminProjects() {
   // Image & Document Handlers for Form
   const handleAddImage = () => {
     if (!imageUrlInput) return;
+    let url = imageUrlInput.trim();
+    if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("data:")) {
+      url = `https://${url}`;
+    }
     const newImg = {
-      url: imageUrlInput,
+      url,
       name: imageNameInput || "Project Image",
       uploadedAt: new Date(),
     };
-    setFormData({ ...formData, images: [...formData.images, newImg] });
+    setFormData((prev) => ({ ...prev, images: [...prev.images, newImg] }));
     setImageUrlInput("");
     setImageNameInput("");
   };
@@ -271,32 +341,56 @@ function AdminProjects() {
     setFormData({ ...formData, documents: updated });
   };
 
-  // File Upload Conversion (Base64 / Local preview fallback)
+  // File Upload Conversion (Base64 / Local preview fallback with image compression)
   const handleFileUpload = (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === "image") {
-        setFormData({
-          ...formData,
-          images: [
-            ...formData.images,
-            { url: reader.result, name: file.name, uploadedAt: new Date() },
-          ],
-        });
-      } else if (type === "document") {
-        setFormData({
-          ...formData,
-          documents: [
-            ...formData.documents,
-            { url: reader.result, name: file.name, uploadedAt: new Date() },
-          ],
-        });
-      }
-    };
-    reader.readAsDataURL(file);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (type === "image") {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 600;
+            const MAX_HEIGHT = 600;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
+
+            setFormData((prev) => ({
+              ...prev,
+              images: [...prev.images, { url: dataUrl, name: file.name, uploadedAt: new Date() }],
+            }));
+          };
+          img.src = event.target.result;
+        } else if (type === "document") {
+          setFormData((prev) => ({
+            ...prev,
+            documents: [...prev.documents, { url: event.target.result, name: file.name, uploadedAt: new Date() }],
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   // Engineer multi-select toggle
@@ -407,7 +501,7 @@ function AdminProjects() {
           <div className="summary-card">
             <div className="summary-icon gold"><FaDollarSign /></div>
             <div>
-              <h3>${totalBudget.toLocaleString()}</h3>
+              <h3>{totalBudget.toLocaleString()} Birr</h3>
               <p>Total Budget</p>
             </div>
           </div>
@@ -487,7 +581,7 @@ function AdminProjects() {
                 <div className="project-meta-grid">
                   <div>
                     <span>Budget</span>
-                    <strong>${(project.budget || 0).toLocaleString()}</strong>
+                    <strong>{(project.budget || 0).toLocaleString()} Birr</strong>
                   </div>
                   <div>
                     <span>Client</span>
@@ -539,7 +633,7 @@ function AdminProjects() {
                     onClick={() => handleDeleteProject(project._id, project.projectName)}
                     title="Delete Project"
                   >
-                    <FaTrash />
+                    <FaTrash /> Delete
                   </button>
                 </div>
               </div>
@@ -558,6 +652,8 @@ function AdminProjects() {
                 &times;
               </button>
             </div>
+
+            {error && <div className="project-alert alert-error" style={{ margin: "16px 24px 0" }}>{error}</div>}
 
             <form onSubmit={handleSubmitForm} className="project-form">
               <div className="form-row-2">
@@ -595,7 +691,7 @@ function AdminProjects() {
                 </label>
 
                 <label>
-                  Budget ($)
+                  Budget (Birr)
                   <input
                     type="number"
                     min="0"
@@ -724,41 +820,29 @@ function AdminProjects() {
                 ></textarea>
               </label>
 
-              {/* Upload Images */}
-              <div className="media-section">
-                <h3>Upload Project Images <FaImage /></h3>
-                <div className="media-input-row">
-                  <input
-                    type="text"
-                    placeholder="Image URL (http://...)"
-                    value={imageUrlInput}
-                    onChange={(e) => setImageUrlInput(e.target.value)}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Caption / Title"
-                    value={imageNameInput}
-                    onChange={(e) => setImageNameInput(e.target.value)}
-                  />
-                  <button type="button" onClick={handleAddImage} className="btn-add-media">
-                    Add URL
-                  </button>
-                </div>
-                <div className="file-upload-picker">
-                  <span>or Upload Image File: </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileUpload(e, "image")}
-                  />
-                </div>
+              {/* Upload Images from File Explorer */}
+              <div className="media-section" style={{ background: "#f8fafc", padding: "18px", borderRadius: "12px", border: "2px dashed #cbd5e1", margin: "16px 0" }}>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "8px", margin: "0 0 10px", fontSize: "15px", color: "#0f172a" }}>
+                  <FaImage style={{ color: "#ff6b00" }} /> Upload Project Photos from File Explorer
+                </h3>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => handleFileUpload(e, "image")}
+                  style={{ display: "block", width: "100%", padding: "10px", background: "white", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
+                />
+                <small style={{ color: "#64748b", marginTop: "6px", display: "block" }}>
+                  Select one or multiple photos directly from your computer files (.jpg, .png, .webp).
+                </small>
 
                 {formData.images.length > 0 && (
-                  <div className="media-preview-grid">
+                  <div className="media-preview-grid" style={{ marginTop: "16px" }}>
                     {formData.images.map((img, idx) => (
                       <div key={idx} className="preview-item">
-                        <img src={img.url} alt={img.name} />
-                        <span>{img.name}</span>
+                        <img src={typeof img === "string" ? img : img.url} alt={img.name || "Photo"} />
+                        <span>{typeof img === "string" ? "Uploaded Photo" : (img.name || "Photo")}</span>
                         <button type="button" onClick={() => handleRemoveImage(idx)}>&times;</button>
                       </div>
                     ))}
@@ -870,7 +954,7 @@ function AdminProjects() {
               <div className="details-info-grid">
                 <div className="info-box">
                   <span className="info-label"><FaDollarSign /> Budget</span>
-                  <span className="info-val">${(viewingProject.budget || 0).toLocaleString()}</span>
+                  <span className="info-val">{(viewingProject.budget || 0).toLocaleString()} Birr</span>
                 </div>
                 <div className="info-box">
                   <span className="info-label">📍 Location</span>
@@ -908,9 +992,9 @@ function AdminProjects() {
                     <h4>Client <FaUserTie /></h4>
                     {viewingProject.client ? (
                       <div>
-                        <strong>{viewingProject.client.fullName}</strong>
-                        <p>{viewingProject.client.email}</p>
-                        <p>{viewingProject.client.phone}</p>
+                        <strong>{typeof viewingProject.client === "object" ? (viewingProject.client.fullName || viewingProject.client.email || "Client Assigned") : viewingProject.client}</strong>
+                        {viewingProject.client?.email && <p>{viewingProject.client.email}</p>}
+                        {viewingProject.client?.phone && <p>{viewingProject.client.phone}</p>}
                       </div>
                     ) : (
                       <p className="hint-text">No client assigned.</p>
@@ -954,12 +1038,16 @@ function AdminProjects() {
                 <h3>Project Images <FaImage /> ({viewingProject.images?.length || 0})</h3>
                 {viewingProject.images && viewingProject.images.length > 0 ? (
                   <div className="gallery-grid">
-                    {viewingProject.images.map((img, idx) => (
-                      <a key={idx} href={img.url} target="_blank" rel="noreferrer" className="gallery-card">
-                        <img src={img.url} alt={img.name} />
-                        <span>{img.name}</span>
-                      </a>
-                    ))}
+                    {viewingProject.images.map((img, idx) => {
+                      const imageUrl = typeof img === "string" ? img : img.url;
+                      const imageName = typeof img === "string" ? "Image" : img.name || "Image";
+                      return (
+                        <a key={idx} href={imageUrl} target="_blank" rel="noreferrer" className="gallery-card">
+                          <img src={imageUrl} alt={imageName} />
+                          <span>{imageName}</span>
+                        </a>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="hint-text">No images uploaded for this project.</p>
@@ -971,19 +1059,26 @@ function AdminProjects() {
                 <h3>Project Documents <FaFileAlt /> ({viewingProject.documents?.length || 0})</h3>
                 {viewingProject.documents && viewingProject.documents.length > 0 ? (
                   <div className="docs-list">
-                    {viewingProject.documents.map((doc, idx) => (
-                      <div key={idx} className="doc-item">
-                        <div>
-                          <strong>📄 {doc.name}</strong>
-                          <span className="doc-date">
-                            Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}
-                          </span>
+                    {viewingProject.documents.map((doc, idx) => {
+                      const docName = typeof doc === "string" ? "Document" : doc.name || "Document";
+                      const docUrl = typeof doc === "string" ? doc : doc.url;
+                      const uploadedAt = typeof doc === "string" ? null : doc.uploadedAt;
+                      return (
+                        <div key={idx} className="doc-item">
+                          <div>
+                            <strong>📄 {docName}</strong>
+                            {uploadedAt && (
+                              <span className="doc-date">
+                                Uploaded: {new Date(uploadedAt).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                          <a href={docUrl} target="_blank" rel="noreferrer" className="btn-download">
+                            Open File ↗
+                          </a>
                         </div>
-                        <a href={doc.url} target="_blank" rel="noreferrer" className="btn-download">
-                          Open File ↗
-                        </a>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="hint-text">No documents attached to this project.</p>

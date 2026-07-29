@@ -39,9 +39,11 @@ function AdminLogin() {
       localStorage.setItem("token", token);
       localStorage.setItem("userRole", user.role);
       localStorage.setItem("adminName", user.fullName || "Admin");
+      localStorage.setItem("userName", user.fullName || "Admin");
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed. Please try again.");
+      setError(err.response?.data?.message || err.message || "Login failed. Please try again.");
+      console.error("Admin login error:", err);
     } finally {
       setLoading(false);
     }

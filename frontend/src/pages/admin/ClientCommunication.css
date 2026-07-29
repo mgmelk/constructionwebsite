@@ -1,0 +1,262 @@
+.client-communication-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f4f7fb 0%, #eef5ff 100%);
+  padding: 24px;
+  color: #14213d;
+}
+
+.client-communication-shell {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.client-communication-sidebar {
+  width: 290px;
+  background: linear-gradient(180deg, #10253f 0%, #183a67 100%);
+  color: white;
+  border-radius: 22px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-brand h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.sidebar-brand p {
+  margin: 3px 0 0;
+  color: #dce8ff;
+  font-size: 13px;
+}
+
+.sidebar-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+.sidebar-card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.sidebar-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #e9f0ff;
+}
+
+.client-communication-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.client-communication-header {
+  background: white;
+  border-radius: 20px;
+  padding: 20px 22px;
+  box-shadow: 0 12px 28px rgba(14, 41, 76, 0.08);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #5a7dca;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.client-communication-header h1 {
+  margin: 0;
+  font-size: 26px;
+  color: #12223d;
+}
+
+.client-communication-card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(14, 41, 76, 0.08);
+}
+
+.section-heading {
+  margin-bottom: 12px;
+}
+
+.section-heading h3 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #6e7a90;
+  font-size: 14px;
+}
+
+.message-form,
+.reply-form {
+  display: grid;
+  gap: 10px;
+}
+
+.message-form input,
+.message-form textarea,
+.reply-form input {
+  border: 1px solid #dce7ff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.message-form textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.message-form button,
+.reply-form button {
+  border: none;
+  border-radius: 10px;
+  background: #1757c4;
+  color: white;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.message-form button:disabled,
+.reply-form button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.thread-list {
+  display: grid;
+  gap: 14px;
+}
+
+.thread-card {
+  border: 1px solid #e8f0ff;
+  border-radius: 16px;
+  padding: 14px;
+  background: #fbfdff;
+}
+
+.thread-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.thread-badge {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: #1757c4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.thread-card h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.thread-meta {
+  margin: 0;
+  color: #6e7a90;
+  font-size: 13px;
+}
+
+.thread-status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #def0ff;
+  color: #15608b;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.thread-status.replied {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.thread-body {
+  margin: 0 0 10px;
+  color: #334155;
+  line-height: 1.6;
+}
+
+.reply-stack {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.reply-item {
+  background: #f7fbff;
+  border: 1px solid #ecf4ff;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.reply-item strong {
+  display: block;
+  color: #10233f;
+}
+
+.reply-item span {
+  display: inline-block;
+  margin: 4px 0;
+  font-size: 12px;
+  color: #5a7dca;
+  text-transform: capitalize;
+}
+
+.reply-item p {
+  margin: 0;
+  color: #475569;
+}
+
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}
+
+@media (max-width: 980px) {
+  .client-communication-shell {
+    flex-direction: column;
+  }
+  .client-communication-sidebar {
+    width: 100%;
+  }
+}

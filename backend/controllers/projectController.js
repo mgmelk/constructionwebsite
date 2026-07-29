@@ -1,6 +1,48 @@
+const mongoose = require("mongoose");
 const Project = require("../models/Project");
 
-// CREATE PROJECT
+const sanitizeObjectId = (id) => {
+  if (!id) return null;
+  const str = String(id).trim();
+  if (!str) return null;
+  if (mongoose.Types.ObjectId.isValid(str) && String(new mongoose.Types.ObjectId(str)) === str) {
+    return str;
+  }
+  return null;
+};
+
+const sanitizeObjectIdArray = (arr) => {
+  const list = Array.isArray(arr) ? arr : arr ? [arr] : [];
+  return list.map(sanitizeObjectId).filter(Boolean);
+};
+
+const normalizeImages = (imgList) => {
+  if (!Array.isArray(imgList)) return [];
+  return imgList
+    .map((img) => {
+      if (typeof img === "string" && img.trim() !== "") {
+        let url = img.trim();
+        if (url.startsWith("data:")) {
+          url = url.replace(/[\r\n\s]+/g, "");
+        } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          url = `https://${url}`;
+        }
+        return { url, name: "Project Image", uploadedAt: new Date() };
+      }
+      if (img && typeof img === "object" && img.url) {
+        let url = String(img.url).trim();
+        if (url.startsWith("data:")) {
+          url = url.replace(/[\r\n\s]+/g, "");
+        } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          url = `https://${url}`;
+        }
+        return { url, name: img.name || "Project Image", uploadedAt: img.uploadedAt || new Date() };
+      }
+      return null;
+    })
+    .filter(Boolean);
+};
+
 const createProject = async (req, res) => {
   try {
     const {
@@ -13,6 +55,7 @@ const createProject = async (req, res) => {
       description,
       location,
       budget,
+      paidAmount,
       startDate,
       endDate,
       progress,
@@ -29,20 +72,21 @@ const createProject = async (req, res) => {
     const project = await Project.create({
       projectName,
       projectCode: generatedCode,
-      client: client || null,
-      projectManager: projectManager || null,
-      engineers: Array.isArray(engineers) ? engineers : engineers ? [engineers] : [],
-      employees: Array.isArray(employees) ? employees : employees ? [employees] : [],
+      client: sanitizeObjectId(client) || client || null,
+      projectManager: sanitizeObjectId(projectManager),
+      engineers: sanitizeObjectIdArray(engineers),
+      employees: sanitizeObjectIdArray(employees),
       description: description || "",
       location: location || "",
-      budget: Number(budget) || 0,
+      budget: typeof budget !== "undefined" && budget !== null && budget !== "" ? Number(budget) : 150000000,
+      paidAmount: typeof paidAmount !== "undefined" && paidAmount !== null && paidAmount !== "" ? Number(paidAmount) : 0,
       startDate: startDate ? new Date(startDate) : new Date(),
       endDate: endDate ? new Date(endDate) : null,
       progress: typeof progress !== "undefined" ? Number(progress) : 0,
       status: status || "Planning",
-      images: Array.isArray(images) ? images : [],
+      images: normalizeImages(images),
       documents: Array.isArray(documents) ? documents : [],
-      createdBy: req.user ? req.user.id : null,
+      createdBy: sanitizeObjectId(req.user?.id),
     });
 
     const populatedProject = await Project.findById(project._id)
@@ -62,7 +106,6 @@ const createProject = async (req, res) => {
   }
 };
 
-// GET ALL PROJECTS
 const getProjects = async (req, res) => {
   try {
     const projects = await Project.find()
@@ -80,7 +123,6 @@ const getProjects = async (req, res) => {
   }
 };
 
-// GET SINGLE PROJECT
 const getProjectById = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id)
@@ -103,7 +145,6 @@ const getProjectById = async (req, res) => {
   }
 };
 
-// UPDATE PROJECT
 const updateProject = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -124,6 +165,7 @@ const updateProject = async (req, res) => {
       description,
       location,
       budget,
+      paidAmount,
       startDate,
       endDate,
       progress,
@@ -134,17 +176,22 @@ const updateProject = async (req, res) => {
 
     if (projectName) project.projectName = projectName;
     if (projectCode) project.projectCode = projectCode;
-    if (typeof client !== "undefined") project.client = client || null;
-    if (typeof projectManager !== "undefined") project.projectManager = projectManager || null;
+    if (typeof client !== "undefined") {
+      project.client = sanitizeObjectId(client) || client || null;
+    }
+    if (typeof projectManager !== "undefined") {
+      project.projectManager = sanitizeObjectId(projectManager);
+    }
     if (typeof engineers !== "undefined") {
-      project.engineers = Array.isArray(engineers) ? engineers : engineers ? [engineers] : [];
+      project.engineers = sanitizeObjectIdArray(engineers);
     }
     if (typeof employees !== "undefined") {
-      project.employees = Array.isArray(employees) ? employees : employees ? [employees] : [];
+      project.employees = sanitizeObjectIdArray(employees);
     }
     if (typeof description !== "undefined") project.description = description;
     if (typeof location !== "undefined") project.location = location;
-    if (typeof budget !== "undefined") project.budget = Number(budget);
+    if (typeof budget !== "undefined" && budget !== null && budget !== "") project.budget = Number(budget);
+    if (typeof paidAmount !== "undefined" && paidAmount !== null && paidAmount !== "") project.paidAmount = Number(paidAmount);
     if (typeof startDate !== "undefined") project.startDate = startDate ? new Date(startDate) : project.startDate;
     if (typeof endDate !== "undefined") project.endDate = endDate ? new Date(endDate) : null;
     if (typeof progress !== "undefined") {
@@ -154,7 +201,7 @@ const updateProject = async (req, res) => {
       }
     }
     if (typeof status !== "undefined") project.status = status;
-    if (Array.isArray(images)) project.images = images;
+    if (Array.isArray(images)) project.images = normalizeImages(images);
     if (Array.isArray(documents)) project.documents = documents;
 
     await project.save();
@@ -176,7 +223,6 @@ const updateProject = async (req, res) => {
   }
 };
 
-// DELETE PROJECT
 const deleteProject = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -199,7 +245,6 @@ const deleteProject = async (req, res) => {
   }
 };
 
-// MARK PROJECT AS COMPLETED
 const markProjectCompleted = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -235,7 +280,51 @@ const markProjectCompleted = async (req, res) => {
   }
 };
 
-// UPLOAD PROJECT MEDIA (Images or Documents)
+const updateProjectStatus = async (req, res) => {
+  try {
+    const { status, progress } = req.body;
+    const project = await Project.findById(req.params.id);
+
+    if (!project) {
+      return res.status(404).json({
+        message: "Project not found",
+      });
+    }
+
+    if (status) {
+      project.status = status;
+      if (status === "Completed") {
+        project.progress = 100;
+        if (!project.endDate) project.endDate = new Date();
+      }
+    }
+
+    if (typeof progress !== "undefined" && progress !== null) {
+      project.progress = Math.min(100, Math.max(0, Number(progress)));
+      if (project.progress === 100) {
+        project.status = "Completed";
+      }
+    }
+
+    await project.save();
+
+    const updatedProject = await Project.findById(project._id)
+      .populate("client", "fullName email phone role")
+      .populate("projectManager", "fullName email role")
+      .populate("engineers", "fullName email phone role")
+      .populate("employees", "fullName email phone role");
+
+    res.json({
+      message: `Project status updated to ${project.status}`,
+      project: updatedProject,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Failed to update project status",
+    });
+  }
+};
+
 const uploadProjectMedia = async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
@@ -291,6 +380,90 @@ const uploadProjectMedia = async (req, res) => {
   }
 };
 
+const updatePaymentStatus = async (req, res) => {
+  try {
+    const { id, paymentId } = req.params;
+    const { status, paymentMethod, receiptRef } = req.body;
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const paymentItem = project.payments.find((p) => String(p.id) === String(paymentId) || String(p._id) === String(paymentId));
+    if (!paymentItem) {
+      return res.status(404).json({ message: "Milestone payment item not found" });
+    }
+
+    if (status) paymentItem.status = status;
+    if (paymentMethod) paymentItem.paymentMethod = paymentMethod;
+    if (receiptRef) paymentItem.receiptRef = receiptRef;
+
+    const newPaidTotal = project.payments
+      .filter((p) => p.status === "Paid")
+      .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+    project.paidAmount = newPaidTotal;
+
+    await project.save();
+
+    const updatedProject = await Project.findById(project._id)
+      .populate("client", "fullName email phone role")
+      .populate("projectManager", "fullName email role")
+      .populate("engineers", "fullName email phone role")
+      .populate("employees", "fullName email phone role");
+
+    res.json({
+      message: `Milestone payment ${paymentItem.id} marked as ${paymentItem.status}. Total Paid: ${newPaidTotal.toLocaleString()} Birr`,
+      project: updatedProject,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Failed to update payment status" });
+  }
+};
+
+const submitPaymentReceipt = async (req, res) => {
+  try {
+    const { id, paymentId } = req.params;
+    const { receiptUrl, paymentMethod, receiptRef } = req.body;
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const paymentItem = project.payments.find((p) => String(p.id) === String(paymentId) || String(p._id) === String(paymentId));
+    if (!paymentItem) {
+      return res.status(404).json({ message: "Milestone payment item not found" });
+    }
+
+    if (receiptUrl) paymentItem.receiptUrl = receiptUrl;
+    if (paymentMethod) paymentItem.paymentMethod = paymentMethod;
+    if (receiptRef) paymentItem.receiptRef = receiptRef;
+    paymentItem.status = "Pending Approval";
+    paymentItem.submittedAt = new Date();
+
+    project.paidAmount = project.payments
+      .filter((p) => p.status === "Paid")
+      .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+    await project.save();
+
+    const updatedProject = await Project.findById(project._id)
+      .populate("client", "fullName email phone role")
+      .populate("projectManager", "fullName email role")
+      .populate("engineers", "fullName email phone role")
+      .populate("employees", "fullName email phone role");
+
+    res.json({
+      message: "Payment receipt submitted to Admin for verification!",
+      project: updatedProject,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Failed to submit payment receipt" });
+  }
+};
+
 module.exports = {
   createProject,
   getProjects,
@@ -298,5 +471,8 @@ module.exports = {
   updateProject,
   deleteProject,
   markProjectCompleted,
+  updateProjectStatus,
   uploadProjectMedia,
+  updatePaymentStatus,
+  submitPaymentReceipt,
 };

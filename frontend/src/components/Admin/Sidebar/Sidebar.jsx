@@ -112,7 +112,7 @@ function Sidebar() {
 
                     <FaEnvelope />
 
-                    Messages
+                    <Link to="/admin/client-communications">Client Issues</Link>
 
                 </li>
 

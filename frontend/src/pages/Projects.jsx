@@ -1,14 +1,16 @@
-import React from "react";
-import "../components/Projects/Projects.css";
+import Navbar from "../components/Navbar/Navbar";
+import HomeProjects from "../components/HomeProjects/HomeProjects";
+import Contact from "../components/Contact/Contact";
 
 function Projects() {
   return (
-    <main className="projects-page">
-      <div className="projects-inner">
-        <h1>Our Projects</h1>
-        <p>Project listings will appear here. Replace with dynamic content as needed.</p>
+    <>
+      <Navbar />
+      <div style={{ paddingTop: "80px" }}>
+        <HomeProjects />
       </div>
-    </main>
+      <Contact />
+    </>
   );
 }
 

@@ -8,7 +8,10 @@ const {
   updateProject,
   deleteProject,
   markProjectCompleted,
+  updateProjectStatus,
   uploadProjectMedia,
+  updatePaymentStatus,
+  submitPaymentReceipt,
 } = require("../controllers/projectController");
 
 const protect = require("../middleware/authMiddleware");
@@ -42,6 +45,28 @@ router.delete(
   protect,
   authorize("admin"),
   deleteProject
+);
+
+// Update project status / classification
+router.patch(
+  "/:id/status",
+  protect,
+  authorize("admin", "project_manager"),
+  updateProjectStatus
+);
+
+// Update milestone payment status
+router.patch(
+  "/:id/payments/:paymentId",
+  protect,
+  authorize("admin", "project_manager"),
+  updatePaymentStatus
+);
+
+// Client submit payment receipt photo / ref
+router.post(
+  "/:id/payments/:paymentId/receipt",
+  submitPaymentReceipt
 );
 
 // Mark project as completed

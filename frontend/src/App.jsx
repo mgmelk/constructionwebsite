@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Projects from "./pages/Projects";
 import Contact from "./pages/Contact";
@@ -21,18 +21,20 @@ import CreateEmployee from "./pages/admin/CreateEmployee";
 import Quotes from "./pages/admin/Quotes";
 import Quote from "./pages/Quote";
 import HRDashboard from "./pages/hr/Dashboard";
-import EngineerDashboard from "./pages/engineer/Dashboard";
 import EmployeeDashboard from "./pages/employee/Dashboard";
 import ClientDashboard from "./pages/client/Dashboard";
 import AdminProjects from "./pages/admin/Projects";
+import ClientCommunicationPage from "./pages/admin/ClientCommunication";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Navigate to="/" replace />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/services/:slug" element={<ServiceDetail />} />
@@ -47,6 +49,7 @@ function App() {
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/users" element={<Users />} />
                 <Route path="/admin/projects" element={<AdminProjects />} />
+                <Route path="/admin/client-communications" element={<ClientCommunicationPage />} />
                 <Route path="/admin/admins" element={<Admins />} />
                 <Route path="/admin/clients" element={<AdminClients />} />
                 <Route path="/admin/engineers" element={<AdminEngineers />} />
@@ -56,10 +59,10 @@ function App() {
                 <Route path="/admin/create-hr" element={<CreateHRManager />} />
                 <Route path="/admin/create-engineer" element={<CreateEngineer />} />
                 <Route path="/admin/create-employee" element={<CreateEmployee />} />
-                <Route path="/hr/dashboard" element={<HRDashboard />} />
-                <Route path="/engineer/dashboard" element={<EngineerDashboard />} />
-                <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-                <Route path="/client/dashboard" element={<ClientDashboard />} />
+                <Route path="/hr/dashboard" element={<ProtectedRoute requireRole="hr_manager"><HRDashboard /></ProtectedRoute>} />
+                <Route path="/engineer/dashboard" element={<Navigate to="/" replace />} />
+                <Route path="/employee/dashboard" element={<ProtectedRoute requireRole="employee"><EmployeeDashboard /></ProtectedRoute>} />
+                <Route path="/client/dashboard" element={<ProtectedRoute requireRole="client"><ClientDashboard /></ProtectedRoute>} />
             </Routes>
         </BrowserRouter>
     );
