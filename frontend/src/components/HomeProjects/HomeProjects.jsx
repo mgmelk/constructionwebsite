@@ -12,22 +12,22 @@ import {
 } from "react-icons/fa";
 import "./HomeProjects.css";
 
-// Fallback sample projects with guaranteed working unsplash construction images
+// Fallback sample project shown on the public showcase
 const SAMPLE_PROJECTS = [
   {
     _id: "sample-1",
-    projectName: "MG Building Commercial Complex & Plaza",
+    projectName: "MG Building Complex",
     projectCode: "PRJ-MG-8090",
     status: "Planning",
     progress: 0,
     location: "Bole Medhanealem Corridor, Addis Ababa",
-    budget: 45000000,
+    budget: 150000000,
     startDate: "2026-08-01",
     endDate: "2028-12-31",
-    client: { fullName: "Abebe Kebede", email: "abebe@globaltech.com" },
+    client: { fullName: "Chelotaw Gatew", email: "chelotaw@gateway.com" },
     engineers: [{ fullName: "David Engineer", phone: "+251929581296" }],
     employees: [{ fullName: "Alex Employee" }],
-    description: "Modern 22-story MG Building commercial complex featuring executive office suites, structural reinforced concrete framing, underground parking, and smart glass architecture.",
+    description: "Modern MG Building complex featuring executive office suites, structural reinforced concrete framing, underground parking, and smart glass architecture.",
     images: [
       {
         url: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1000&q=80",
@@ -36,44 +36,6 @@ const SAMPLE_PROJECTS = [
       {
         url: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80",
         name: "Site Mobilization Plan",
-      },
-    ],
-  },
-  {
-    _id: "sample-2",
-    projectName: "Skyline Luxury Residential Complex",
-    projectCode: "PRJ-8012",
-    status: "Planning",
-    progress: 0,
-    location: "Bole Medhanealem Avenue",
-    budget: 82000000,
-    startDate: "2026-09-01",
-    endDate: "2028-12-30",
-    client: { fullName: "Tigist Alemu", email: "tigist@horizonproperties.com" },
-    description: "Modern luxury residential apartments consisting of 120 units, swimming pool, rooftop garden, and eco-friendly solar integration.",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80",
-        name: "Construction Progress",
-      },
-    ],
-  },
-  {
-    _id: "sample-3",
-    projectName: "National Highway Expansion & Bridge",
-    projectCode: "PRJ-7033",
-    status: "Planning",
-    progress: 0,
-    location: "Northern Corridor Highway",
-    budget: 125000000,
-    startDate: "2026-10-10",
-    endDate: "2029-12-15",
-    client: { fullName: "Federal Infrastructure Authority", email: "info@infra.gov.et" },
-    description: "Structural concrete bridge design and 45km four-lane dual carriageway expansion designed for heavy transport load capabilities.",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?auto=format&fit=crop&w=1000&q=80",
-        name: "Bridge Framework",
       },
     ],
   },
@@ -93,8 +55,11 @@ function HomeProjects() {
     setLoading(true);
     try {
       const res = await axios.get("/api/projects");
-      if (Array.isArray(res.data) && res.data.length > 0) {
-        setProjects(res.data);
+      const apiProjects = Array.isArray(res.data) ? res.data : [];
+      const visibleProjects = apiProjects.filter((project) => /mg building/i.test(project.projectName || ""));
+
+      if (visibleProjects.length > 0) {
+        setProjects(visibleProjects);
       } else {
         setProjects(SAMPLE_PROJECTS);
       }
