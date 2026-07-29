@@ -165,6 +165,16 @@ function AdminProjects() {
     setShowDetailsModal(true);
   };
 
+  const getProjectImageUrl = (imgItem) => {
+    if (!imgItem) return "";
+    if (typeof imgItem === "string") return imgItem;
+    return imgItem.url || "";
+  };
+
+  const featuredProjectImage = viewingProject
+    ? getProjectImageUrl(viewingProject.images?.[0]) || getProjectImageUrl(viewingProject.image)
+    : "";
+
   // Submit Add/Edit Form
   const compressSingleImage = (imgItem) => {
     return new Promise((resolve) => {
@@ -949,6 +959,16 @@ function AdminProjects() {
                   </button>
                 )}
               </div>
+
+              {featuredProjectImage && (
+                <div style={{ marginBottom: "20px", borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0", background: "#fff" }}>
+                  <img
+                    src={featuredProjectImage}
+                    alt={viewingProject.projectName}
+                    style={{ width: "100%", maxHeight: "320px", objectFit: "cover", display: "block" }}
+                  />
+                </div>
+              )}
 
               {/* Grid Overview Info */}
               <div className="details-info-grid">

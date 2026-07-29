@@ -54,7 +54,9 @@ function HomeProjects() {
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("/api/projects");
+      const res = await axios.get("/api/projects", {
+        headers: localStorage.getItem("token") ? { Authorization: `Bearer ${localStorage.getItem("token")}` } : {},
+      });
       const apiProjects = Array.isArray(res.data) ? res.data : [];
       const visibleProjects = apiProjects.filter((project) => /mg building/i.test(project.projectName || ""));
 
@@ -137,6 +139,10 @@ function HomeProjects() {
     }
     return "Client Unassigned";
   };
+
+  const selectedProjectImage = selectedProject?.images?.length
+    ? resolveImageUrl(selectedProject.images[0], 0)
+    : getFallbackImage(0);
 
   return (
     <section className="home-projects-section" id="projects-showcase">
@@ -291,6 +297,18 @@ function HomeProjects() {
                 <span style={{ fontSize: "14px", color: "#475569" }}>
                   Progress: <strong>{selectedProject.progress || 0}%</strong>
                 </span>
+              </div>
+
+              <div style={{ marginBottom: "24px", borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0", background: "#fff" }}>
+                <img
+                  src={selectedProjectImage}
+                  alt={selectedProject.projectName}
+                  style={{ width: "100%", maxHeight: "320px", objectFit: "cover", display: "block" }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = getFallbackImage(0);
+                  }}
+                />
               </div>
 
               {/* Grid Metadata */}

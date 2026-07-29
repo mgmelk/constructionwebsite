@@ -40,7 +40,7 @@ const DEFAULT_CLIENT_PROJECT = {
   startDate: "2026-08-01",
   endDate: "2028-12-31",
   daysRemaining: 880,
-  client: { fullName: "Abebe Kebede", companyName: "Global Tech Africa", email: "abebe@globaltech.com" },
+  client: { fullName: "Chelotaw Gatew", companyName: "Global Tech Africa", email: "abebe@globaltech.com" },
   projectManager: { fullName: "David Engineer", phone: "+251929581296", email: "david.engineer@gmail.com" },
   engineers: [{ _id: "eng-1", fullName: "David Engineer", phone: "+251929581296", email: "david.engineer@gmail.com" }],
   employees: [{ _id: "emp-1", fullName: "Alex Employee", email: "alex.employee@gmail.com" }],
