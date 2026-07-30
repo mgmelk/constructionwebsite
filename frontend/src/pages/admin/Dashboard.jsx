@@ -1,5 +1,5 @@
 // Admin dashboard page
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../../components/Admin/Sidebar/Sidebar";
@@ -51,6 +51,7 @@ function Dashboard() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [materials, setMaterials] = useState([]);
+  const [pendingReceipts, setPendingReceipts] = useState([]);
   const [materialForm, setMaterialForm] = useState({
     materialName: "",
     category: "General",
@@ -104,6 +105,8 @@ function Dashboard() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("userRole");
 
+  const initialLoaded = useRef(false);
+
   useEffect(() => {
     if (!token) {
       navigate("/admin/login", { replace: true });
@@ -119,19 +122,35 @@ function Dashboard() {
       localStorage.setItem("userRole", "admin");
     }
 
-    fetchDashboardData();
+    // initial load should show the loading indicator; subsequent silent loads should not
+    fetchDashboardData({ silent: false });
   }, [navigate, role, token]);
 
-  const fetchDashboardData = async () => {
-    setLoading(true);
+  // Poll dashboard data periodically so admin sees newly submitted receipts quickly.
+  // Use silent refresh to avoid showing the full-page loading indicator repeatedly.
+  useEffect(() => {
+    let intervalId;
+    try {
+      intervalId = setInterval(() => {
+        fetchDashboardData({ silent: true });
+      }, 8000);
+    } catch (e) {}
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, []);
+
+  const fetchDashboardData = async ({ silent = true } = {}) => {
+    if (!silent) setLoading(true);
     setError("");
     try {
-      const [dashRes, projRes, usersRes, msgRes, materialsRes] = await Promise.all([
+      const [dashRes, projRes, usersRes, msgRes, materialsRes, pendingRes] = await Promise.all([
         axios.get(`/api/admin/dashboard`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/projects`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/users`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/messages`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { messages: [] } })),
         axios.get(`/api/admin/materials`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { purchases: [] } })),
+        axios.get(`/api/admin/pending-receipts`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { pending: [] } })),
       ]);
 
       setStats(dashRes.data.dashboard);
@@ -139,6 +158,7 @@ function Dashboard() {
       setUsers(usersRes.data || []);
       setMessages(msgRes.data?.messages || []);
       setMaterials(materialsRes.data?.purchases || []);
+      setPendingReceipts(pendingRes.data?.pending || []);
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.removeItem("token");
@@ -149,7 +169,10 @@ function Dashboard() {
       }
       setError(err.response?.data?.message || "Unable to load dashboard data.");
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+        initialLoaded.current = true;
+      }
     }
   };
 
@@ -504,21 +527,12 @@ function Dashboard() {
     }
   };
 
-  const pendingReceiptProjects = projects.filter((proj) =>
-    Array.isArray(proj.payments) && proj.payments.some((pay) => pay.status === "Pending Approval")
-  );
-
-  const pendingReceiptItems = pendingReceiptProjects.flatMap((proj) =>
-    (proj.payments || [])
-      .filter((pay) => pay.status === "Pending Approval")
-      .map((pay) => ({ ...pay, projectId: proj._id, projectName: proj.projectName, projectCode: proj.projectCode, clientName: proj.client?.fullName || "Unknown Client" }))
-  );
+  // pendingReceipts is fetched from server via /api/admin/pending-receipts
 
   const handleRefreshPendingApprovals = async () => {
     setRefreshing(true);
     try {
-      const projRes = await axios.get(`/api/projects`, { headers: { Authorization: `Bearer ${token}` } });
-      setProjects(projRes.data || []);
+      await fetchDashboardData({ silent: true });
       setSuccess("Pending approvals refreshed!");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
@@ -847,19 +861,19 @@ function Dashboard() {
                     <FaSync style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }} /> Refresh
                   </button>
                   <Link to="/admin/projects" className="view-all-link">
-                    Review All Projects ({pendingReceiptItems.length}) &rarr;
+                    Review All Projects ({pendingReceipts.length}) &rarr;
                   </Link>
                 </div>
               </div>
 
-              {pendingReceiptItems.length === 0 ? (
+              {pendingReceipts.length === 0 ? (
                 <div className="empty-projects-card" style={{ padding: "30px" }}>
                   <FaPaperPlane style={{ fontSize: "36px", color: "#cbd5e1", marginBottom: "8px" }} />
                   <p>No receipts pending approval right now.</p>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-                  {pendingReceiptItems.map((pay) => (
+                  {pendingReceipts.map((pay) => (
                     <div key={`${pay.projectId}-${pay.id || pay._id}`} style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "14px", padding: "20px", boxShadow: "0 4px 12px rgba(0,0,0,0.03)" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", marginBottom: "14px" }}>
                         <div>

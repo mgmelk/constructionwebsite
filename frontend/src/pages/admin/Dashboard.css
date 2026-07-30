@@ -642,6 +642,22 @@
   .dashboard-content-container {
     margin-left: 0;
     padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 768px) {
+  .materials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .material-form .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .material-list {
+    order: 2;
   }
 }
 

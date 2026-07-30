@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Project = require("../models/Project");
+const Message = require("../models/Message");
 
 const sanitizeObjectId = (id) => {
   if (!id) return null;
@@ -459,6 +460,30 @@ const submitPaymentReceipt = async (req, res) => {
       message: "Payment receipt submitted to Admin for verification!",
       project: updatedProject,
     });
+
+    // Create an in-app message/notification for Admins so the submission appears in admin messages
+    try {
+      const senderId = req.user?.id || null;
+      const senderName = req.user?.fullName || (req.body.senderName || "Client");
+      const senderEmail = req.user?.email || (req.body.senderEmail || "client@example.com");
+
+      await Message.create({
+        sender: senderId,
+        senderName,
+        senderEmail,
+        recipient: null,
+        recipientName: "Admin",
+        project: project._id,
+        projectName: project.projectName || "Project",
+        subject: `Payment receipt submitted: ${paymentItem.id || paymentId}`,
+        body: `A client submitted a payment receipt for milestone ${paymentItem.id || paymentId}. Receipt ref: ${paymentItem.receiptRef || 'N/A'}.`,
+        read: false,
+        status: "Open",
+        replies: [],
+      });
+    } catch (e) {
+      console.error("Failed to create admin message for receipt submission:", e.message || e);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message || "Failed to submit payment receipt" });
   }

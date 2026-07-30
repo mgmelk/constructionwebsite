@@ -4,24 +4,10 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
-const getApiBaseUrl = () => {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
-  }
-
-  if (typeof window === 'undefined') {
-    return 'http://192.168.100.19:5000';
-  }
-
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
-    return 'http://192.168.100.19:5000';
-  }
-
-  return `http://${hostname}:5000`;
-};
-
-axios.defaults.baseURL = getApiBaseUrl();
+// Use explicit VITE_API_URL when provided, otherwise use relative paths so
+// the frontend uses the same origin (works on mobile and when proxied).
+const apiUrl = import.meta.env.VITE_API_URL || "";
+axios.defaults.baseURL = apiUrl;
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(

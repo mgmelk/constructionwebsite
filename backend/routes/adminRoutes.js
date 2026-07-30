@@ -19,7 +19,8 @@ const {
     getAdmins,
     createMaterialPurchase,
     getMaterialPurchases,
-    updateMaterialPurchase
+    updateMaterialPurchase,
+    getPendingReceipts
 
 } = require("../controllers/adminController");
 
@@ -73,6 +74,14 @@ router.put(
     protect,
     authorize("admin"),
     updateMaterialPurchase
+);
+
+// Get pending receipts submitted by clients (for admin review)
+router.get(
+    "/pending-receipts",
+    protect,
+    authorize("admin"),
+    getPendingReceipts
 );
 
 module.exports = router;

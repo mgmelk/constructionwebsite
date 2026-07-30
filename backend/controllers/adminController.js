@@ -207,13 +207,51 @@ const updateMaterialPurchase = async (req, res) => {
     }
 };
 
-module.exports = {
 
+// Get pending payment receipts across projects for admin review
+const getPendingReceipts = async (req, res) => {
+    try {
+        const Project = require("../models/Project");
+
+        const projects = await Project.find({ "payments.status": "Pending Approval" })
+            .populate("client", "fullName email")
+            .sort({ updatedAt: -1 });
+
+        const pending = [];
+        projects.forEach((proj) => {
+            (proj.payments || []).forEach((p) => {
+                if (p.status === "Pending Approval") {
+                    pending.push({
+                        projectId: proj._id,
+                        projectName: proj.projectName,
+                        projectCode: proj.projectCode,
+                        clientName: proj.client?.fullName || "Unknown Client",
+                        clientEmail: proj.client?.email || "",
+                        id: p.id || p._id,
+                        amount: p.amount,
+                        paymentMethod: p.paymentMethod,
+                        receiptRef: p.receiptRef,
+                        receiptUrl: p.receiptUrl,
+                        description: p.description,
+                        status: p.status,
+                        submittedAt: p.submittedAt || p.updatedAt || proj.updatedAt,
+                    });
+                }
+            });
+        });
+
+        res.json({ success: true, pending });
+    } catch (error) {
+        res.status(500).json({ message: error.message || "Failed to fetch pending receipts" });
+    }
+};
+
+module.exports = {
     getAdminDashboard,
     createAdmin,
     getAdmins,
     createMaterialPurchase,
     getMaterialPurchases,
-    updateMaterialPurchase
-
+    updateMaterialPurchase,
+    getPendingReceipts,
 };
