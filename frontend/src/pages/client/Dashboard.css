@@ -989,3 +989,28 @@
     font-size: 16px;
   }
 }
+
+/* Small-screen horizontal scroll fallback: allow side-by-side columns to be reachable by horizontal swipe
+   This helps devices where stacking may clip the right column or when the layout requires more width. */
+@media (max-width: 768px) {
+  .dashboard-main-grid {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 8px;
+  }
+
+  .dashboard-main-grid > .left-column,
+  .dashboard-main-grid > .right-column {
+    flex: 0 0 320px;
+    scroll-snap-align: start;
+    min-width: 320px;
+  }
+
+  /* Ensure the right column content can expand without being clipped */
+  .right-column {
+    min-width: 300px;
+  }
+}
