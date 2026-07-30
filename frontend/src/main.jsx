@@ -4,7 +4,9 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || "";
+const apiBaseUrl = import.meta.env.VITE_API_URL || "";
+const isNonLocalhostDevice = typeof window !== 'undefined' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/);
+axios.defaults.baseURL = isNonLocalhostDevice && apiBaseUrl.includes('localhost') ? "" : apiBaseUrl;
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(

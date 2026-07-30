@@ -42,7 +42,11 @@ function AdminLogin() {
       localStorage.setItem("userName", user.fullName || "Admin");
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Login failed. Please try again.");
+      const isNetworkError = err.message === "Network Error" || err.code === "ERR_NETWORK";
+      const message = isNetworkError
+        ? "Unable to reach the backend API. Make sure the server is running and this device can access it."
+        : err.response?.data?.message || err.message || "Login failed. Please try again.";
+      setError(message);
       console.error("Admin login error:", err);
     } finally {
       setLoading(false);

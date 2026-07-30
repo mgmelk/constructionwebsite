@@ -50,7 +50,10 @@ function Login() {
         setError("Only admin, HR manager, engineer, employee, or client accounts can access the dashboard.");
       }
     } catch (err) {
-      const message = err.response?.data?.message || err.message || "Login failed. Please try again.";
+      const isNetworkError = err.message === "Network Error" || err.code === "ERR_NETWORK";
+      const message = isNetworkError
+        ? "Unable to reach the backend API. Make sure the server is running and this device can access it."
+        : err.response?.data?.message || err.message || "Login failed. Please try again.";
       setError(message);
       console.error("Login error:", err);
     } finally {
