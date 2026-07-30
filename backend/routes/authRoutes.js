@@ -21,30 +21,35 @@ router.options("/change-password", respondToOptions);
 // Register public user
 router.all("/register", (req, res, next) => {
   if (req.method === "OPTIONS") return respondToOptions(req, res);
+  console.log(`[AUTH] ${req.method} ${req.originalUrl} - body: ${JSON.stringify(req.body || {})}`);
   if (req.method === "POST") return register(req, res);
   return res.status(405).json({ message: "Method not allowed" });
 });
 
 router.all("/login", (req, res, next) => {
   if (req.method === "OPTIONS") return respondToOptions(req, res);
+  console.log(`[AUTH] ${req.method} ${req.originalUrl} - body: ${JSON.stringify(req.body || {})}`);
   if (req.method === "POST") return login(req, res);
   return res.status(405).json({ message: "Method not allowed" });
 });
 
 router.all("/forgot-password", (req, res, next) => {
   if (req.method === "OPTIONS") return respondToOptions(req, res);
+  console.log(`[AUTH] ${req.method} ${req.originalUrl} - body: ${JSON.stringify(req.body || {})}`);
   if (req.method === "POST") return forgotPassword(req, res);
   return res.status(405).json({ message: "Method not allowed" });
 });
 
 router.all("/reset-password/:token", (req, res, next) => {
   if (req.method === "OPTIONS") return respondToOptions(req, res);
+  console.log(`[AUTH] ${req.method} ${req.originalUrl} - body: ${JSON.stringify(req.body || {})}`);
   if (req.method === "POST") return resetPassword(req, res);
   return res.status(405).json({ message: "Method not allowed" });
 });
 
 router.all("/change-password", (req, res, next) => {
   if (req.method === "OPTIONS") return respondToOptions(req, res);
+  console.log(`[AUTH] ${req.method} ${req.originalUrl} - body: ${JSON.stringify(req.body || {})}`);
   if (req.method === "POST") return changePassword(req, res);
   return res.status(405).json({ message: "Method not allowed" });
 });
