@@ -862,3 +862,130 @@
 .btn-modal-action:hover {
   background: var(--accent-gold-hover);
 }
+
+@media (max-width: 1024px) {
+  .client-container {
+    padding: 20px 16px;
+  }
+
+  .client-navbar {
+    padding: 12px 16px;
+  }
+
+  .dashboard-main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .client-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .client-nav-right {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .proj-select-dropdown {
+    width: 100%;
+  }
+
+  .user-profile-badge {
+    order: 2;
+  }
+
+  .btn-logout-client {
+    margin-left: auto;
+  }
+
+  .client-hero-banner {
+    padding: 20px;
+    align-items: flex-start;
+  }
+
+  .hero-text h1 {
+    font-size: 22px;
+  }
+
+  .hero-quick-meta {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sum-card {
+    padding: 18px;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .milestone-item {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .budget-overview-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .photos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .client-container {
+    padding: 12px 10px 40px;
+  }
+
+  .client-nav-brand h2 {
+    font-size: 16px;
+  }
+
+  .hero-text h1 {
+    font-size: 20px;
+  }
+
+  .dash-section-card {
+    padding: 16px;
+  }
+
+  .photos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .modal-head {
+    padding: 16px 18px;
+  }
+
+  .modal-head h3 {
+    font-size: 16px;
+  }
+}

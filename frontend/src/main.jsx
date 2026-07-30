@@ -4,10 +4,8 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
-// Use explicit VITE_API_URL when provided; otherwise fall back to the current
-// origin so requests stay on the same host and work reliably on mobile.
-const apiUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' ? window.location.origin : "");
-axios.defaults.baseURL = apiUrl;
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+axios.defaults.baseURL = configuredApiUrl || "";
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(
