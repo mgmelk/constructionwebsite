@@ -136,6 +136,81 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
+.materials-section {
+  margin-top: 24px;
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.materials-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+}
+
+.material-form {
+  display: grid;
+  gap: 12px;
+}
+
+.material-form .grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.material-form input,
+.material-form select,
+.material-form textarea {
+  width: 100%;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.material-form button {
+  border: none;
+  border-radius: 8px;
+  background: #16a34a;
+  color: white;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.material-form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(22, 163, 74, 0.2);
+}
+
+.material-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.material-card {
+  border: 1px solid #e8eef4;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+}
+
+.material-card strong {
+  color: #081924;
+}
+
+.material-meta {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 6px;
+}
+
 .dashboard-projects-section .section-header {
   display: flex;
   justify-content: space-between;

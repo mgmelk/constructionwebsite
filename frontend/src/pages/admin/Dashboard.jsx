@@ -50,6 +50,20 @@ function Dashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [materials, setMaterials] = useState([]);
+  const [materialForm, setMaterialForm] = useState({
+    materialName: "",
+    category: "General",
+    quantity: "",
+    unit: "pcs",
+    unitPrice: "",
+    supplier: "",
+    invoiceNumber: "",
+    purchaseDate: new Date().toISOString().split("T")[0],
+    project: "",
+    status: "Pending",
+    notes: "",
+  });
 
   const handleTogglePaymentStatus = async (projectId, paymentId, currentStatus) => {
     const newStatus = currentStatus === "Paid" ? "Unpaid" : "Paid";
@@ -112,17 +126,19 @@ function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const [dashRes, projRes, usersRes, msgRes] = await Promise.all([
+      const [dashRes, projRes, usersRes, msgRes, materialsRes] = await Promise.all([
         axios.get(`/api/admin/dashboard`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/projects`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/users`, { headers: { Authorization: `Bearer ${token}` } }),
         axios.get(`/api/messages`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { messages: [] } })),
+        axios.get(`/api/admin/materials`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { purchases: [] } })),
       ]);
 
       setStats(dashRes.data.dashboard);
       setProjects(projRes.data || []);
       setUsers(usersRes.data || []);
       setMessages(msgRes.data?.messages || []);
+      setMaterials(materialsRes.data?.purchases || []);
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.removeItem("token");
@@ -154,6 +170,54 @@ function Dashboard() {
 
     return !mentionsEngineer;
   });
+
+  const handleMaterialSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    try {
+      const payload = {
+        ...materialForm,
+        quantity: Number(materialForm.quantity),
+        unitPrice: Number(materialForm.unitPrice),
+      };
+
+      const res = await axios.post(`/api/admin/materials`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const createdPurchase = res.data.purchase || {
+        ...payload,
+        _id: Date.now().toString(),
+        totalAmount: Number(payload.quantity) * Number(payload.unitPrice),
+        createdAt: new Date().toISOString(),
+      };
+
+      setSuccess(res.data.message || "Material purchase registered successfully.");
+      setMaterials((prev) => [createdPurchase, ...prev]);
+      setMaterialForm({
+        materialName: "",
+        category: "General",
+        quantity: "",
+        unit: "pcs",
+        unitPrice: "",
+        supplier: "",
+        invoiceNumber: "",
+        purchaseDate: new Date().toISOString().split("T")[0],
+        project: "",
+        status: "Pending",
+        notes: "",
+      });
+    } catch (err) {
+      const status = err.response?.status;
+      const data = err.response?.data;
+      const serverMsg = data && typeof data === "object" ? data.message : data;
+      const message = serverMsg ? `Server ${status}: ${serverMsg}` : (err.message || "Failed to register material purchase.");
+      setError(message);
+      console.error("Material purchase error:", err);
+    }
+  };
 
   const handleResetForm = () => {
     setEditingProject(null);
@@ -641,6 +705,113 @@ function Dashboard() {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Material Purchases & Inventory Registration */}
+            <div className="materials-section">
+              <div className="section-header">
+                <div>
+                  <h2>Material Purchases</h2>
+                  <p>Register purchased construction materials, their price, quantity, supplier, and invoice details.</p>
+                </div>
+              </div>
+
+              <div className="materials-grid">
+                <form className="material-form" onSubmit={handleMaterialSubmit}>
+                  <div className="grid-2">
+                    <input
+                      placeholder="Material name"
+                      value={materialForm.materialName}
+                      onChange={(e) => setMaterialForm({ ...materialForm, materialName: e.target.value })}
+                      required
+                    />
+                    <input
+                      placeholder="Category"
+                      value={materialForm.category}
+                      onChange={(e) => setMaterialForm({ ...materialForm, category: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid-2">
+                    <input
+                      type="number"
+                      min="1"
+                      placeholder="Quantity"
+                      value={materialForm.quantity}
+                      onChange={(e) => setMaterialForm({ ...materialForm, quantity: e.target.value })}
+                      required
+                    />
+                    <input
+                      placeholder="Unit"
+                      value={materialForm.unit}
+                      onChange={(e) => setMaterialForm({ ...materialForm, unit: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid-2">
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="Unit price"
+                      value={materialForm.unitPrice}
+                      onChange={(e) => setMaterialForm({ ...materialForm, unitPrice: e.target.value })}
+                      required
+                    />
+                    <input
+                      placeholder="Supplier"
+                      value={materialForm.supplier}
+                      onChange={(e) => setMaterialForm({ ...materialForm, supplier: e.target.value })}
+                    />
+                  </div>
+                  <div className="grid-2">
+                    <input
+                      placeholder="Invoice number"
+                      value={materialForm.invoiceNumber}
+                      onChange={(e) => setMaterialForm({ ...materialForm, invoiceNumber: e.target.value })}
+                    />
+                    <input
+                      type="date"
+                      value={materialForm.purchaseDate}
+                      onChange={(e) => setMaterialForm({ ...materialForm, purchaseDate: e.target.value })}
+                    />
+                  </div>
+                  <select
+                    value={materialForm.status}
+                    onChange={(e) => setMaterialForm({ ...materialForm, status: e.target.value })}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Received">Received</option>
+                    <option value="Canceled">Canceled</option>
+                  </select>
+                  <textarea
+                    rows="3"
+                    placeholder="Notes"
+                    value={materialForm.notes}
+                    onChange={(e) => setMaterialForm({ ...materialForm, notes: e.target.value })}
+                  />
+                  <button type="submit" style={{ background: "#16a34a", padding: "12px 18px", fontSize: "15px", boxShadow: "0 6px 16px rgba(22, 163, 74, 0.2)" }}>Register Purchase</button>
+                </form>
+
+                <div className="material-list">
+                  {materials.length === 0 ? (
+                    <div className="empty-projects-card">
+                      <p>No material purchases registered yet.</p>
+                    </div>
+                  ) : (
+                    materials.map((item) => (
+                      <div key={item._id} className="material-card">
+                        <strong>{item.materialName}</strong>
+                        <div className="material-meta">
+                          {item.quantity} {item.unit} · Unit price: {Number(item.unitPrice || 0).toLocaleString()} ETB · Total: {Number(item.totalAmount || 0).toLocaleString()} ETB
+                        </div>
+                        <div className="material-meta">
+                          Supplier: {item.supplier || "N/A"} · Invoice: {item.invoiceNumber || "N/A"} · Status: {item.status}
+                        </div>
+                        {item.notes ? <div className="material-meta">Notes: {item.notes}</div> : null}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Pending Receipt Approvals */}

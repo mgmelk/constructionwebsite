@@ -26,14 +26,22 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
+// Simple request logger to help debug route matching
+app.use((req, res, next) => {
+  try {
+    console.log(`[REQ] ${req.method} ${req.originalUrl}`);
+  } catch (e) {}
+  next();
+});
+
 const path = require("path");
 const fs = require("fs");
 
 const frontendDist = path.join(__dirname, "../frontend/dist");
 if (fs.existsSync(frontendDist)) {
   app.use(express.static(frontendDist));
-  app.get("*", (req, res, next) => {
-    if (req.path.startsWith("/api")) return next();
+  // Serve SPA index for all non-API routes (use regex to avoid path-to-regexp parsing issues)
+  app.get(/^(?!\/api).*/, (req, res) => {
     res.sendFile(path.join(frontendDist, "index.html"));
   });
 } else {
@@ -62,6 +70,38 @@ app.use("/api", (req, res, next) => {
 
 // Authentication routes
 app.use("/api/admin", adminRoutes);
+// Temporary explicit routes for material purchases to ensure the endpoint is reachable
+// These mirror the handlers in adminRoutes but are mounted directly on the app to avoid
+// any router mounting/order issues while debugging the 404 problem.
+const adminController = require("./controllers/adminController");
+const protectMiddleware = require("./middleware/authMiddleware");
+const authorizeMiddleware = require("./middleware/roleMiddleware");
+
+app.post(
+  "/api/admin/materials",
+  protectMiddleware,
+  authorizeMiddleware("admin"),
+  (req, res, next) => {
+    try {
+      console.log(`[EXPLICIT_ROUTE] POST /api/admin/materials`);
+    } catch (e) {}
+    next();
+  },
+  adminController.createMaterialPurchase
+);
+
+app.get(
+  "/api/admin/materials",
+  protectMiddleware,
+  authorizeMiddleware("admin"),
+  (req, res, next) => {
+    try {
+      console.log(`[EXPLICIT_ROUTE] GET /api/admin/materials`);
+    } catch (e) {}
+    next();
+  },
+  adminController.getMaterialPurchases
+);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
@@ -85,10 +125,39 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
+// Debug route to verify POST handling without auth
+app.post('/api/admin/materials-debug', (req, res) => {
+  res.json({ success: true, debug: true, body: req.body });
+});
+
 // Port
 const PORT = process.env.PORT || 5000;
+
+// Debug: list registered routes (useful for verifying route registration)
+const listRoutes = () => {
+  try {
+    const routes = [];
+    app._router.stack.forEach((middleware) => {
+      if (middleware.route) {
+        // routes registered directly on the app
+        routes.push(`${Object.keys(middleware.route.methods).join(',').toUpperCase()} ${middleware.route.path}`);
+      } else if (middleware.name === 'router' && middleware.handle && middleware.handle.stack) {
+        // router middleware
+        middleware.handle.stack.forEach((handler) => {
+          if (handler.route) {
+            routes.push(`${Object.keys(handler.route.methods).join(',').toUpperCase()} ${handler.route.path}`);
+          }
+        });
+      }
+    });
+    console.log('Registered routes:\n', routes.join('\n'));
+  } catch (e) {
+    console.error('Failed to list routes', e);
+  }
+};
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on port ${PORT} on 0.0.0.0`);
+  listRoutes();
 });

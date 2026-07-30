@@ -2,11 +2,24 @@ const express = require("express");
 
 const router = express.Router();
 
+console.log('adminRoutes module loaded');
+
+// Log incoming requests to this router for debugging
+router.use((req, res, next) => {
+    try {
+        console.log(`[adminRoutes] ${req.method} ${req.path}`);
+    } catch (e) {}
+    next();
+});
+
 const {
 
     getAdminDashboard,
     createAdmin,
-    getAdmins
+    getAdmins,
+    createMaterialPurchase,
+    getMaterialPurchases,
+    updateMaterialPurchase
 
 } = require("../controllers/adminController");
 
@@ -38,6 +51,28 @@ router.get(
     protect,
     authorize("admin"),
     getAdmins
+);
+
+// Material purchase management
+router.post(
+    "/materials",
+    protect,
+    authorize("admin"),
+    createMaterialPurchase
+);
+
+router.get(
+    "/materials",
+    protect,
+    authorize("admin"),
+    getMaterialPurchases
+);
+
+router.put(
+    "/materials/:id",
+    protect,
+    authorize("admin"),
+    updateMaterialPurchase
 );
 
 module.exports = router;

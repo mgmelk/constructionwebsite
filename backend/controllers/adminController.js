@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Project = require("../models/Project");
 const Admin = require("../models/Admin");
+const MaterialPurchase = require("../models/MaterialPurchase");
 
 
 // Dashboard
@@ -135,10 +136,84 @@ const getAdmins = async (req, res) => {
 };
 
 
+const createMaterialPurchase = async (req, res) => {
+    try {
+        const {
+            materialName,
+            category,
+            quantity,
+            unit,
+            unitPrice,
+            supplier,
+            invoiceNumber,
+            purchaseDate,
+            project,
+            notes,
+            status,
+        } = req.body;
+
+        if (!materialName || !quantity || !unitPrice) {
+            return res.status(400).json({ message: "Material name, quantity and unit price are required." });
+        }
+
+        const totalAmount = Number(quantity) * Number(unitPrice);
+
+        const purchase = await MaterialPurchase.create({
+            materialName,
+            category: category || "General",
+            quantity: Number(quantity),
+            unit: unit || "pcs",
+            unitPrice: Number(unitPrice),
+            totalAmount,
+            supplier: supplier || "",
+            invoiceNumber: invoiceNumber || "",
+            purchaseDate: purchaseDate || new Date(),
+            purchasedBy: req.user?.id || null,
+            project: project || null,
+            status: status || "Pending",
+            notes: notes || "",
+        });
+
+        res.status(201).json({ success: true, message: "Material purchase registered successfully", purchase });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getMaterialPurchases = async (req, res) => {
+    try {
+        const purchases = await MaterialPurchase.find()
+            .populate("project", "projectName")
+            .populate("purchasedBy", "fullName email")
+            .sort({ purchaseDate: -1 });
+
+        res.json({ success: true, purchases });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const updateMaterialPurchase = async (req, res) => {
+    try {
+        const purchase = await MaterialPurchase.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+        if (!purchase) {
+            return res.status(404).json({ message: "Material purchase not found" });
+        }
+
+        res.json({ success: true, message: "Material purchase updated", purchase });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
 
     getAdminDashboard,
     createAdmin,
-    getAdmins
+    getAdmins,
+    createMaterialPurchase,
+    getMaterialPurchases,
+    updateMaterialPurchase
 
 };
