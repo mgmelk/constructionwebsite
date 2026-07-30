@@ -18,7 +18,11 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`/api/auth/login`, {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.hostname !== '0.0.0.0'
+        ? `http://${window.location.hostname}:5000`
+        : 'http://127.0.0.1:5000');
+      const loginUrl = `${apiBaseUrl}/api/auth/login`.replace(/([^:]\/)\/+/g, "$1/");
+      const response = await axios.post(loginUrl, {
         ...formData,
         email: formData.email.trim().toLowerCase(),
       });

@@ -4,9 +4,24 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || "";
-const isNonLocalhostDevice = typeof window !== 'undefined' && !window.location.hostname.match(/^(localhost|127\.0\.0\.1)$/);
-axios.defaults.baseURL = isNonLocalhostDevice && apiBaseUrl.includes('localhost') ? "" : apiBaseUrl;
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  if (typeof window === 'undefined') {
+    return 'http://127.0.0.1:5000';
+  }
+
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
+    return 'http://127.0.0.1:5000';
+  }
+
+  return `http://${hostname}:5000`;
+};
+
+axios.defaults.baseURL = getApiBaseUrl();
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(
