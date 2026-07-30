@@ -69,6 +69,11 @@ router.post(
   submitPaymentReceipt
 );
 
+router.options(
+  "/:id/payments/:paymentId/receipt",
+  (req, res) => res.sendStatus(204)
+);
+
 // Mark project as completed
 router.patch(
   "/:id/complete",
