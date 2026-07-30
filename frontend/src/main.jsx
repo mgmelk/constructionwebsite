@@ -10,12 +10,12 @@ const getApiBaseUrl = () => {
   }
 
   if (typeof window === 'undefined') {
-    return 'http://127.0.0.1:5000';
+    return 'http://192.168.100.19:5000';
   }
 
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0') {
-    return 'http://127.0.0.1:5000';
+    return 'http://192.168.100.19:5000';
   }
 
   return `http://${hostname}:5000`;

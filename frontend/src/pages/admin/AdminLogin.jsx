@@ -19,9 +19,7 @@ function AdminLogin() {
     setLoading(true);
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && window.location.hostname !== '0.0.0.0'
-        ? `http://${window.location.hostname}:5000`
-        : 'http://127.0.0.1:5000');
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://192.168.100.19:5000';
       const loginUrl = `${apiBaseUrl}/api/auth/login`.replace(/([^:]\/)\/+/g, "$1/");
       const response = await axios.post(loginUrl, {
         ...formData,
