@@ -4,7 +4,7 @@ function Contact() {
   return (
     <section className="contact-page" id="contact">
       <div className="contact-inner">
-        <h1>Contact Wemaster Construction PLC</h1>
+        <p className="contact-label">Contact</p>
         <p>
           Reach us for construction materials, electrical works, software services,
           and building design.

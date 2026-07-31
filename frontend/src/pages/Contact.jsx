@@ -5,7 +5,6 @@ function Contact() {
   return (
     <section className="contact-page">
       <div className="contact-inner">
-        <h1>Contact Wemaster Construction PLC</h1>
         <p>Reach us for construction materials, electrical works, software services, and building design.</p>
         <div className="contact-details">
           <div>

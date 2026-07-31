@@ -18,6 +18,15 @@
   font-size:18px;
   line-height:32px;
 }
+
+.contact-label{
+  color:#f7b500;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
 .contact-details{
   display:grid;
   grid-template-columns:repeat(3,minmax(200px,1fr));
