@@ -54,14 +54,6 @@ function About() {
 
             <FaCheckCircle className="check"/>
 
-            Industrial Construction
-
-          </div>
-
-          <div>
-
-            <FaCheckCircle className="check"/>
-
             Professional Engineers
 
           </div>

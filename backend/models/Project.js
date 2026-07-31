@@ -124,6 +124,18 @@ const projectSchema = new mongoose.Schema(
       default: DEFAULT_PAYMENTS,
     },
 
+    milestones: {
+      type: [
+        {
+          title: { type: String, default: "" },
+          date: { type: String, default: "" },
+          progress: { type: Number, default: 0, min: 0, max: 100 },
+          status: { type: String, default: "Scheduled" },
+        }
+      ],
+      default: [],
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

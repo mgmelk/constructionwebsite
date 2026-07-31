@@ -42,6 +42,13 @@ function AdminProjects() {
   const [viewingProject, setViewingProject] = useState(null);
 
   // Form State
+  const createDefaultMilestones = () => [
+    { title: "Phase 1", date: "", progress: 0, status: "Scheduled" },
+    { title: "Phase 2", date: "", progress: 0, status: "Scheduled" },
+    { title: "Phase 3", date: "", progress: 0, status: "Scheduled" },
+    { title: "Phase 4", date: "", progress: 0, status: "Scheduled" },
+  ];
+
   const [formData, setFormData] = useState({
     projectName: "",
     projectCode: "",
@@ -58,6 +65,13 @@ function AdminProjects() {
     employees: [],
     images: [],
     documents: [],
+    milestones: createDefaultMilestones(),
+    payments: [
+      { id: "INV-20M-01", description: "Phase 1 Milestone Payment", amount: 20000000 },
+      { id: "INV-30M-02", description: "Phase 2 Milestone Payment", amount: 30000000 },
+      { id: "INV-50M-03", description: "Phase 3 Milestone Payment", amount: 50000000 },
+      { id: "INV-50M-04", description: "Phase 4 Milestone Payment", amount: 50000000 },
+    ],
   });
 
   // Media upload input helpers
@@ -122,6 +136,13 @@ function AdminProjects() {
       employees: [],
       images: [],
       documents: [],
+      milestones: createDefaultMilestones(),
+      payments: [
+        { id: "INV-20M-01", description: "Phase 1 Milestone Payment", amount: 20000000 },
+        { id: "INV-30M-02", description: "Phase 2 Milestone Payment", amount: 30000000 },
+        { id: "INV-50M-03", description: "Phase 3 Milestone Payment", amount: 50000000 },
+        { id: "INV-50M-04", description: "Phase 4 Milestone Payment", amount: 50000000 },
+      ],
     });
     setImageUrlInput("");
     setImageNameInput("");
@@ -155,6 +176,26 @@ function AdminProjects() {
       employees: Array.isArray(proj.employees) ? proj.employees.map((e) => e._id || e) : [],
       images: proj.images || [],
       documents: proj.documents || [],
+      milestones: Array.isArray(proj.milestones) && proj.milestones.length > 0
+        ? proj.milestones.map((m) => ({
+            title: m.title || "",
+            date: m.date || "",
+            progress: typeof m.progress !== "undefined" ? Number(m.progress) : 0,
+            status: m.status || "Scheduled",
+          }))
+        : createDefaultMilestones(),
+      payments: Array.isArray(proj.payments) && proj.payments.length > 0
+        ? proj.payments.map((p) => ({
+            id: p.id || "",
+            description: p.description || "",
+            amount: typeof p.amount !== "undefined" ? Number(p.amount) : 0,
+          }))
+        : [
+            { id: "INV-20M-01", description: "Phase 1 Milestone Payment", amount: 20000000 },
+            { id: "INV-30M-02", description: "Phase 2 Milestone Payment", amount: 30000000 },
+            { id: "INV-50M-03", description: "Phase 3 Milestone Payment", amount: 50000000 },
+            { id: "INV-50M-04", description: "Phase 4 Milestone Payment", amount: 50000000 },
+          ],
     });
     setShowFormModal(true);
   };
@@ -174,6 +215,24 @@ function AdminProjects() {
   const featuredProjectImage = viewingProject
     ? getProjectImageUrl(viewingProject.images?.[0]) || getProjectImageUrl(viewingProject.image)
     : "";
+
+  const handleMilestoneChange = (index, field, value) => {
+    setFormData((prev) => {
+      const current = prev.milestones || createDefaultMilestones();
+      const updated = [...current];
+      updated[index] = { ...updated[index], [field]: field === "progress" ? Number(value) : value };
+      return { ...prev, milestones: updated };
+    });
+  };
+
+  const handlePaymentChange = (index, field, value) => {
+    setFormData((prev) => {
+      const current = prev.payments || [];
+      const updated = [...current];
+      updated[index] = { ...updated[index], [field]: field === "amount" ? Number(value) : value };
+      return { ...prev, payments: updated };
+    });
+  };
 
   // Submit Add/Edit Form
   const compressSingleImage = (imgItem) => {
@@ -251,6 +310,22 @@ function AdminProjects() {
       const payload = {
         ...formData,
         images: compressedImages,
+        milestones: (formData.milestones || createDefaultMilestones()).map((item) => ({
+          title: item.title || "",
+          date: item.date || "",
+          progress: Number(item.progress || 0),
+          status: item.status || "Scheduled",
+        })),
+        payments: (formData.payments || []).map((p) => ({
+          id: p.id || "",
+          description: p.description || "",
+          amount: Number(p.amount || 0),
+          date: p.date || "",
+          status: p.status || "Unpaid",
+          paymentMethod: p.paymentMethod || "Bank Wire Transfer",
+          receiptRef: p.receiptRef || "",
+          receiptUrl: p.receiptUrl || "",
+        })),
       };
 
       if (editingProject) {
@@ -595,7 +670,7 @@ function AdminProjects() {
                   </div>
                   <div>
                     <span>Client</span>
-                    <strong>{project.client?.fullName || "Unassigned"}</strong>
+                    <strong>{project.client?.fullName || "Melkamu Gatew"}</strong>
                   </div>
                   <div>
                     <span>Engineers</span>
@@ -819,6 +894,54 @@ function AdminProjects() {
                 </div>
               </div>
 
+              <div className="form-group" style={{ marginTop: "16px" }}>
+                <label style={{ fontWeight: "700" }}>Progress Tracking & Phase Milestones</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "8px" }}>
+                  {(formData.milestones || createDefaultMilestones()).map((milestone, index) => (
+                    <div key={index} style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px", background: "#fff" }}>
+                      <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+                        <input
+                          type="text"
+                          placeholder={`Phase ${index + 1} title`}
+                          value={milestone.title}
+                          onChange={(e) => handleMilestoneChange(index, "title", e.target.value)}
+                          style={{ flex: 1, padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "8px" }}
+                        />
+                        <select
+                          value={milestone.status}
+                          onChange={(e) => handleMilestoneChange(index, "status", e.target.value)}
+                          style={{ minWidth: "120px", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "8px" }}
+                        >
+                          <option value="Scheduled">Scheduled</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Completed">Completed</option>
+                          <option value="On Hold">On Hold</option>
+                        </select>
+                      </div>
+                      <div style={{ display: "grid", gap: "8px" }}>
+                        <input
+                          type="date"
+                          value={milestone.date}
+                          onChange={(e) => handleMilestoneChange(index, "date", e.target.value)}
+                          style={{ padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "8px" }}
+                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <input
+                            type="range"
+                            min="0"
+                            max="100"
+                            value={milestone.progress}
+                            onChange={(e) => handleMilestoneChange(index, "progress", e.target.value)}
+                            style={{ flex: 1 }}
+                          />
+                          <strong>{milestone.progress || 0}%</strong>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {/* Description */}
               <label>
                 Description
@@ -899,6 +1022,40 @@ function AdminProjects() {
                     ))}
                   </ul>
                 )}
+              </div>
+
+              {/* Milestone Payment Amounts */}
+              <div className="form-group">
+                <label style={{ fontWeight: "700" }}>Milestone Payment Amounts</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "8px" }}>
+                  {(formData.payments || []).map((payment, index) => (
+                    <div key={payment.id} style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px", background: "#fff" }}>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                        <label style={{ flex: 1 }}>
+                          <span style={{ fontSize: "13px", fontWeight: "700", color: "#475569" }}>{payment.id}</span>
+                          <input
+                            type="text"
+                            placeholder="Payment description"
+                            value={payment.description}
+                            onChange={(e) => handlePaymentChange(index, "description", e.target.value)}
+                            style={{ width: "100%", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "8px", marginTop: "4px" }}
+                          />
+                        </label>
+                        <label style={{ minWidth: "150px" }}>
+                          <span style={{ fontSize: "13px", fontWeight: "700", color: "#475569" }}>Amount (ETB)</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1000000"
+                            value={payment.amount}
+                            onChange={(e) => handlePaymentChange(index, "amount", e.target.value)}
+                            style={{ width: "100%", padding: "8px 10px", border: "1px solid #cbd5e1", borderRadius: "8px", marginTop: "4px" }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Modal Buttons */}

@@ -27,7 +27,6 @@ import {
 } from "react-icons/fa";
 import "./Dashboard.css";
 
-// Realistic fallback sample construction project for Client Dashboard
 const DEFAULT_CLIENT_PROJECT = {
   _id: "client-prj-101",
   projectName: "MG Building Commercial Complex & Plaza",
@@ -40,9 +39,9 @@ const DEFAULT_CLIENT_PROJECT = {
   startDate: "2026-08-01",
   endDate: "2028-12-31",
   daysRemaining: 880,
-  client: { fullName: "Chelotaw Gatew", companyName: "Global Tech Africa", email: "abebe@globaltech.com" },
-  projectManager: { fullName: "David Engineer", phone: "+251929581296", email: "david.engineer@gmail.com" },
-  engineers: [{ _id: "eng-1", fullName: "David Engineer", phone: "+251929581296", email: "david.engineer@gmail.com" }],
+  client: { fullName: "Melkamu Gatew", companyName: "Global Tech Africa", email: "abebe@globaltech.com" },
+  projectManager: { fullName: "Admin Support", phone: "", email: "" },
+  engineers: [],
   employees: [{ _id: "emp-1", fullName: "Alex Employee", email: "alex.employee@gmail.com" }],
   description: "Modern 22-story MG Building commercial complex featuring executive office suites, structural reinforced concrete framing, underground parking, and smart glass architecture.",
   milestones: [
@@ -67,12 +66,7 @@ const DEFAULT_CLIENT_PROJECT = {
     { id: "doc-3", name: "Municipal Construction Permit & Environmental Clearance.pdf", size: "3.1 MB", date: "2024-03-01", category: "Permits" },
     { id: "doc-4", name: "Concrete Core Lab Test Quality Audit Report.pdf", size: "5.4 MB", date: "2026-07-02", category: "Quality" },
   ],
-  images: [
-    { url: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1000&q=80", caption: "High-rise Facade & Superstructure" },
-    { url: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80", caption: "Active Construction Floor Slab Pour" },
-    { url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80", caption: "Commercial Tower Aerial View" },
-    { url: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?auto=format&fit=crop&w=1000&q=80", caption: "Steel Structural Framing" },
-  ],
+  images: [],
   updates: [
     { title: "Concrete Pour Complete", time: "2 hours ago", desc: "Lead Site Engineer confirmed 14th floor slab pour passed structural audit." },
     { title: "Inspection Approved", time: "Yesterday at 4:30 PM", desc: "Municipal Inspector signed off on elevator shaft alignment." },
@@ -107,7 +101,8 @@ function ClientDashboard() {
   // Alert Notifications
   const [toastMsg, setToastMsg] = useState("");
 
-  const clientName = localStorage.getItem("userName") || localStorage.getItem("adminName") || "Valued Client";
+  const clientName = localStorage.getItem("userName") || localStorage.getItem("adminName") || "Melkamu Gatew";
+  const clientEmail = localStorage.getItem("userEmail") || "";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -142,9 +137,26 @@ function ClientDashboard() {
       const res = await axios.get("/api/projects", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      if (Array.isArray(res.data) && res.data.length > 0) {
-        setClientProjects(res.data);
-        setSelectedProject(res.data[0]);
+      const allProjects = Array.isArray(res.data) ? res.data : [];
+      const matchedProjects = allProjects.filter((project) => {
+        const projectClient = project.client;
+        const fullName = projectClient?.fullName || "";
+        const email = projectClient?.email || "";
+        const clientId = projectClient?._id || "";
+        const currentUserId = localStorage.getItem("userId") || "";
+
+        return (
+          (clientName && fullName && fullName.toLowerCase().includes(clientName.toLowerCase())) ||
+          (clientEmail && email && email.toLowerCase() === clientEmail.toLowerCase()) ||
+          (clientId && currentUserId && clientId === currentUserId)
+        );
+      });
+
+      const projectsToShow = matchedProjects.length > 0 ? matchedProjects : allProjects;
+
+      if (projectsToShow.length > 0) {
+        setClientProjects(projectsToShow);
+        setSelectedProject(projectsToShow[0]);
       } else {
         setClientProjects([DEFAULT_CLIENT_PROJECT]);
         setSelectedProject(DEFAULT_CLIENT_PROJECT);
@@ -312,10 +324,13 @@ function ClientDashboard() {
     showNotification("Change Request submitted to Engineering Team for review.");
   };
 
-  const currentPaymentsList = (selectedProject.payments && selectedProject.payments.length > 0) ? selectedProject.payments : DEFAULT_CLIENT_PROJECT.payments;
+  const currentPaymentsList = (selectedProject?.payments && selectedProject.payments.length > 0) ? selectedProject.payments : [];
   const currentPaid = currentPaymentsList.filter((p) => p.status === "Paid").reduce((sum, p) => sum + Number(p.amount || 0), 0);
-  const currentBudget = typeof selectedProject.budget !== "undefined" && selectedProject.budget !== null && Number(selectedProject.budget) > 0 ? Number(selectedProject.budget) : 150000000;
+  const currentBudget = typeof selectedProject?.budget !== "undefined" && selectedProject?.budget !== null && Number(selectedProject.budget) > 0 ? Number(selectedProject.budget) : 150000000;
   const remainingBalance = currentBudget - currentPaid;
+  const visibleMilestones = Array.isArray(selectedProject?.milestones) && selectedProject.milestones.length > 0
+    ? selectedProject.milestones
+    : DEFAULT_CLIENT_PROJECT.milestones;
   const visibleMessagesList = (messagesList || []).filter((msg) => {
     const recipientName = (msg.recipientName || "").toLowerCase();
     const senderName = (msg.senderName || "").toLowerCase();
@@ -397,7 +412,7 @@ function ClientDashboard() {
 
           <div className="hero-quick-meta">
             <div className="hero-tag">
-              <FaUserTie style={{ color: "#ff6b00" }} /> PM: {selectedProject.projectManager?.fullName || "Eng. Dawit Tadesse"}
+              <FaUserTie style={{ color: "#ff6b00" }} /> PM: {selectedProject.projectManager?.fullName || "Admin Support"}
             </div>
             <div className="hero-tag">
               <FaCalendarAlt style={{ color: "#38bdf8" }} /> Handover: {selectedProject.endDate ? new Date(selectedProject.endDate).toLocaleDateString() : "Nov 30, 2026"}
@@ -466,7 +481,7 @@ function ClientDashboard() {
               <div className="overview-grid">
                 <div className="overview-box">
                   <label>Client Name</label>
-                  <strong><FaUserTie style={{ color: "#ff6b00" }} /> {selectedProject.client?.fullName || clientName}</strong>
+                  <strong><FaUserTie style={{ color: "#ff6b00" }} /> {selectedProject.client?.fullName || "Melkamu Gatew"}</strong>
                 </div>
                 <div className="overview-box">
                   <label>Site Location</label>
@@ -478,7 +493,7 @@ function ClientDashboard() {
                 </div>
                 <div className="overview-box">
                   <label>Project Manager</label>
-                  <strong><FaPhoneAlt style={{ color: "#ff6b00" }} /> {selectedProject.projectManager?.fullName || "David Engineer"}</strong>
+                  <strong><FaPhoneAlt style={{ color: "#ff6b00" }} /> {selectedProject.projectManager?.fullName || "Admin Support"}</strong>
                 </div>
               </div>
             </div>
@@ -503,14 +518,14 @@ function ClientDashboard() {
 
               {/* Milestone List */}
               <div className="milestones-list">
-                {(selectedProject.milestones || DEFAULT_CLIENT_PROJECT.milestones).map((ms, idx) => (
-                  <div key={idx} className="milestone-item">
+                {visibleMilestones.map((ms, idx) => (
+                  <div key={`${ms.title || idx}-${idx}`} className="milestone-item">
                     <div className={`milestone-icon ${ms.status === "Completed" ? "ms-done" : ms.status === "In Progress" ? "ms-progress" : "ms-upcoming"}`}>
                       {ms.status === "Completed" ? "✓" : idx + 1}
                     </div>
                     <div className="milestone-info">
                       <h4>{ms.title}</h4>
-                      <p>{ms.date} &nbsp;|&nbsp; {ms.progress}% Completed</p>
+                      <p>{ms.date ? `${ms.date} • ` : ""}{Number(ms.progress || 0)}% Completed</p>
                     </div>
                     <span className={`milestone-badge ${ms.status === "Completed" ? "badge-done" : ms.status === "In Progress" ? "badge-inprog" : "badge-sched"}`}>
                       {ms.status}
@@ -767,17 +782,20 @@ function ClientDashboard() {
                 Directly responsible for project coordination, approvals, and client communications for MG Building.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "13px", color: "#e2e8f0" }}>
-                <span>
-                  <FaPhoneAlt style={{ color: "#ff6b00" }} />{" "}
-                  <a
-                    href={`tel:${selectedProject.projectManager?.phone || "+251929581296"}`}
-                    style={{ color: "#ffffff", fontWeight: "700", textDecoration: "none" }}
-                  >
-                    {selectedProject.projectManager?.phone || "+251929581296"}
-                  </a>
-                </span>
-                <span><FaEnvelope style={{ color: "#38bdf8" }} /> {selectedProject.projectManager?.email || "david.engineer@gmail.com"}</span>
-                <span><FaUserTie style={{ color: "#10b981" }} /> Assigned Employee: <strong>{selectedProject.employees?.[0]?.fullName || "Alex Employee"}</strong></span>
+                {selectedProject.projectManager?.phone ? (
+                  <span>
+                    <FaPhoneAlt style={{ color: "#ff6b00" }} />{" "}
+                    <a
+                      href={`tel:${selectedProject.projectManager.phone}`}
+                      style={{ color: "#ffffff", fontWeight: "700", textDecoration: "none" }}
+                    >
+                      {selectedProject.projectManager.phone}
+                    </a>
+                  </span>
+                ) : null}
+                {selectedProject.projectManager?.email ? (
+                  <span><FaEnvelope style={{ color: "#38bdf8" }} /> {selectedProject.projectManager.email}</span>
+                ) : null}
               </div>
               <button
                 style={{ width: "100%", marginTop: "16px", background: "#ff6b00", color: "white", border: "none", padding: "10px", borderRadius: "8px", fontWeight: "700", cursor: "cursor", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}

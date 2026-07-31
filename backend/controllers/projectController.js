@@ -44,6 +44,24 @@ const normalizeImages = (imgList) => {
     .filter(Boolean);
 };
 
+const normalizeMilestones = (milestoneList) => {
+  if (!Array.isArray(milestoneList)) {
+    return [
+      { title: "Phase 1", date: "", progress: 0, status: "Scheduled" },
+      { title: "Phase 2", date: "", progress: 0, status: "Scheduled" },
+      { title: "Phase 3", date: "", progress: 0, status: "Scheduled" },
+      { title: "Phase 4", date: "", progress: 0, status: "Scheduled" },
+    ];
+  }
+
+  return milestoneList.map((item, index) => ({
+    title: item?.title || `Phase ${index + 1}`,
+    date: item?.date || "",
+    progress: typeof item?.progress !== "undefined" && item?.progress !== null ? Number(item.progress) : 0,
+    status: item?.status || "Scheduled",
+  }));
+};
+
 const createProject = async (req, res) => {
   try {
     const {
@@ -63,6 +81,8 @@ const createProject = async (req, res) => {
       status,
       images,
       documents,
+      milestones,
+      payments,
     } = req.body;
 
     const generatedCode =
@@ -87,6 +107,8 @@ const createProject = async (req, res) => {
       status: status || "Planning",
       images: normalizeImages(images),
       documents: Array.isArray(documents) ? documents : [],
+      milestones: normalizeMilestones(milestones),
+      payments: Array.isArray(payments) && payments.length > 0 ? payments : undefined,
       createdBy: sanitizeObjectId(req.user?.id),
     });
 
@@ -173,6 +195,8 @@ const updateProject = async (req, res) => {
       status,
       images,
       documents,
+      milestones,
+      payments,
     } = req.body;
 
     if (projectName) project.projectName = projectName;
@@ -204,6 +228,8 @@ const updateProject = async (req, res) => {
     if (typeof status !== "undefined") project.status = status;
     if (Array.isArray(images)) project.images = normalizeImages(images);
     if (Array.isArray(documents)) project.documents = documents;
+    if (typeof milestones !== "undefined") project.milestones = normalizeMilestones(milestones);
+    if (Array.isArray(payments) && payments.length > 0) project.payments = payments;
 
     await project.save();
 
