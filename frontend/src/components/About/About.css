@@ -94,6 +94,10 @@
     gap: 30px;
   }
 
+  .about-image {
+    display: none;
+  }
+
   .about-content h2 {
     font-size: 26px;
   }
