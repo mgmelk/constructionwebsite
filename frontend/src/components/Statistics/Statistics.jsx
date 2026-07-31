@@ -34,7 +34,7 @@ function Statistics() {
 
           <FaBuilding className="stat-icon" />
 
-          <h1>250+</h1>
+          <h1>25+</h1>
 
           <p>Projects Completed</p>
 
@@ -44,9 +44,9 @@ function Statistics() {
 
           <FaHardHat className="stat-icon" />
 
-          <h1>120+</h1>
+          <h1>20+</h1>
 
-          <p>Professional Engineers</p>
+          <p>Professionals and Technicians</p>
 
         </div>
 
@@ -54,7 +54,7 @@ function Statistics() {
 
           <FaUsers className="stat-icon" />
 
-          <h1>500+</h1>
+          <h1>25+</h1>
 
           <p>Happy Clients</p>
 

@@ -32,55 +32,15 @@ function About() {
           that stand the test of time.
         </p>
 
-        <div className="about-list">
+        <div className="about-text">
+          <p>
+            Wemaster Construction and Engineering PLC is a registered company under Ethiopian federal trade registration and licensing office. The company is committed to driving services in electrical and electromechanical system design, maintenance, construction materials and equipment’s wholesale, software development and interior design and finishing works. This reflects our broader aim to be a multidisciplinary engineering and construction company capable of handling complex and diverse projects.
+          </p>
 
-          <div>
-
-            <FaCheckCircle className="check"/>
-
-            Residential Construction
-
-          </div>
-
-          <div>
-
-            <FaCheckCircle className="check"/>
-
-            Commercial Construction
-
-          </div>
-
-          <div>
-
-            <FaCheckCircle className="check"/>
-
-            Professional Engineers
-
-          </div>
-
-          <div>
-
-            <FaCheckCircle className="check"/>
-
-            Quality Materials
-
-          </div>
-
-          <div>
-
-            <FaCheckCircle className="check"/>
-
-            On-Time Delivery
-
-          </div>
-
+          <p>
+            As Ethiopia continues to experience rapid urbanization, infrastructure growth, and energy demand, Wemaster is well-positioned to contribute to national development goals by delivering high-impact, reliable, and innovative construction services.
+          </p>
         </div>
-
-        <button>
-
-          READ MORE
-
-        </button>
 
       </div>
 

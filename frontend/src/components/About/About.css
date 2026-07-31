@@ -37,41 +37,15 @@
   margin-bottom: 28px;
 }
 
-.about-list {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.about-list div {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.about-text p {
+  color: #555;
+  line-height: 1.8;
   font-size: 16px;
-  color: #222;
+  margin-bottom: 18px;
 }
 
-.check {
-  color: #f7b500;
-  font-size: 18px;
-}
-
-.about button {
-  background: #f7b500;
-  color: black;
-  border: none;
-  padding: 16px 32px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease;
-  border-radius: 4px;
-}
-
-.about button:hover {
-  background: #081924;
-  color: white;
+.about-text p:last-child {
+  margin-bottom: 0;
 }
 
 /* Tablet */
