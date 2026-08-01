@@ -193,8 +193,6 @@ function HomeProjects() {
           <span className="sub-title">Selected Projects</span>
           <h2>Our Featured Construction Projects</h2>
           <p>
-            Some selected Projects
-            <br />
             Explore our finished construction and construction related projects, finished sites, active developments.
           </p>
         </div>
