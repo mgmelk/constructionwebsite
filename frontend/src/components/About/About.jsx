@@ -31,7 +31,7 @@ function About() {
             As Ethiopia continues to experience rapid urbanization, infrastructure growth, and energy demand, Wemaster is well-positioned to contribute to national development goals by delivering high-impact, reliable, and innovative construction services.
           </p>
 
-          <p><strong>Colaborate and Construct</strong></p>
+          <p className="about-slogan"><strong>Colaborate and Construct</strong></p>
         </div>
 
       </div>

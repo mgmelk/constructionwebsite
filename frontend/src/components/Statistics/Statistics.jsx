@@ -24,9 +24,9 @@ function Statistics() {
 
           <FaAward className="stat-icon" />
 
-          <h1>Outstanding</h1>
+          <h1>10+</h1>
 
-          <p>Experience</p>
+          <p>Partners</p>
 
         </div>
 
