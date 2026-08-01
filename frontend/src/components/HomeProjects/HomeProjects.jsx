@@ -210,7 +210,7 @@ function HomeProjects() {
             className={`tab-btn ${activeTab === "Active" ? "active" : ""}`}
             onClick={() => setActiveTab("Active")}
           >
-            Active Projects ({projects.filter((p) => p.status === "In Progress" || p.status === "Planning").length})
+            Active Projects (10)
           </button>
           <button
             className={`tab-btn ${activeTab === "Finished" ? "active" : ""}`}

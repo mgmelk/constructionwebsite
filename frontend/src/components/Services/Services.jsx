@@ -54,7 +54,7 @@ function Services() {
 
                 <p>
 
-                    We provide a full range of construction-related services for every stage of your project.
+                    We provide construction and construction related services to meet our clients demand.
 
                 </p>
 
