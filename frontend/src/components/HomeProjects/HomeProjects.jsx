@@ -10,7 +10,6 @@ import {
   FaUserTie,
   FaEye,
   FaFileAlt,
-  FaCoins,
   FaHardHat,
   FaUsers
 } from "react-icons/fa";
@@ -205,7 +204,7 @@ function HomeProjects() {
             className={`tab-btn ${activeTab === "All" ? "active" : ""}`}
             onClick={() => setActiveTab("All")}
           >
-            All Projects ({projects.length})
+            Featured Projects ({projects.length})
           </button>
         </div>
 
@@ -266,10 +265,9 @@ function HomeProjects() {
                         : "High quality commercial & infrastructure building delivered by Wemaster Construction PLC."}
                     </p>
 
-                    {/* Meta Details with ETB Birr */}
+                    {/* Meta Details */}
                     <div className="card-details-grid">
                       <span><FaMapMarkerAlt style={{ color: "#0066cc" }} /> {project.location || "Ethiopia"}</span>
-                      <span><FaCoins style={{ color: "#16a34a" }} /> </span>
                     </div>
 
                     {/* Progress Bar */}
