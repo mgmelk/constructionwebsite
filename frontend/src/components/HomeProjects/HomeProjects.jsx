@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import wholesaleImage from "../../assets/images/wholesale.png";
+import softwareImage from "../../assets/images/software.jpg";
+import finishingImage from "../../assets/images/finishing.jpg";
+import electricImage from "../../assets/images/electric.jpg";
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -12,32 +16,55 @@ import {
 } from "react-icons/fa";
 import "./HomeProjects.css";
 
-// Fallback sample project shown on the public showcase
+// Sample project card shown on the public showcase
 const SAMPLE_PROJECTS = [
   {
     _id: "sample-1",
-    projectName: "MG Building Complex",
-    projectCode: "PRJ-MG-8090",
-    status: "Planning",
-    progress: 0,
-    location: "Bole Medhanealem Corridor, Addis Ababa",
-    budget: 150000000,
-    startDate: "2026-08-01",
-    endDate: "2028-12-31",
-    client: { fullName: "Chelotaw Gatew", email: "chelotaw@gateway.com" },
-    engineers: [{ fullName: "David Engineer", phone: "+251929581296" }],
-    employees: [{ fullName: "Alex Employee" }],
-    description: "Modern MG Building complex featuring executive office suites, structural reinforced concrete framing, underground parking, and smart glass architecture.",
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1541888946425-d0fbb186a5b3?auto=format&fit=crop&w=1000&q=80",
-        name: "MG Building Exterior Facade",
-      },
-      {
-        url: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1000&q=80",
-        name: "Site Mobilization Plan",
-      },
-    ],
+    projectName: "Construction Material Supply",
+    projectCode: "PRJ-WH-104",
+    status: "Completed",
+    progress: 100,
+    location: "Addis Ababa, Ethiopia",
+    budget: 15000000,
+    client: { fullName: "Castel Real Estate", email: "client@example.com" },
+    description: "Construction material : Cement supply to Castel Realestate construction project",
+    images: [{ url: wholesaleImage, name: "Wholesale Supply" }],
+  },
+  {
+    _id: "sample-2",
+    projectName: "Electrical Connection & Transformer Erection",
+    projectCode: "PRJ-ET-205",
+    status: "Completed",
+    progress: 100,
+    location: "Addis Ababa Riverside, Ethiopia",
+    budget: 0,
+    client: { fullName: "Addis Ababa Riverside Project", email: "client@example.com" },
+    description: "New connection and transformer erection for Addis Ababa Riverside project",
+    images: [{ url: electricImage, name: "Riverside Project" }],
+  },
+  {
+    _id: "sample-3",
+    projectName: "Digital System Integration",
+    projectCode: "PRJ-SW-306",
+    status: "Completed",
+    progress: 100,
+    location: "Addis Ababa, Ethiopia",
+    budget: 0,
+    client: { fullName: "Genbinet.com", email: "client@example.com" },
+    description: "Genbinet.com digital system integration for construction sector stakeholders in Ethiopia",
+    images: [{ url: softwareImage, name: "Software Project" }],
+  },
+  {
+    _id: "sample-4",
+    projectName: "Partition Wall Construction",
+    projectCode: "PRJ-FN-407",
+    status: "Completed",
+    progress: 100,
+    location: "Addis Ababa, Ethiopia",
+    budget: 0,
+    client: { fullName: "Meklit Microfinance", email: "client@example.com" },
+    description: "Partition wall construction for Meklit Microfinance branch office",
+    images: [{ url: finishingImage, name: "Finishing Project" }],
   },
 ];
 
@@ -45,11 +72,27 @@ function HomeProjects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("All");
-  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     fetchProjects();
   }, []);
+
+  const isExcludedProject = (project) => {
+    const text = [
+      project?.projectName,
+      project?.name,
+      project?.title,
+      project?.description,
+      project?.projectCode,
+      project?.client?.fullName,
+      project?.client?.name,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    return /mg\b/i.test(text) && /(building|complex|plaza|tower|office)/i.test(text);
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -58,7 +101,7 @@ function HomeProjects() {
         headers: localStorage.getItem("token") ? { Authorization: `Bearer ${localStorage.getItem("token")}` } : {},
       });
       const apiProjects = Array.isArray(res.data) ? res.data : [];
-      const visibleProjects = apiProjects.filter((project) => /mg building/i.test(project.projectName || ""));
+      const visibleProjects = apiProjects.filter((project) => !isExcludedProject(project));
 
       if (visibleProjects.length > 0) {
         setProjects(visibleProjects);
@@ -123,6 +166,9 @@ function HomeProjects() {
     }
 
     if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+      if (trimmed.startsWith("/") || trimmed.startsWith("./") || trimmed.startsWith("../")) {
+        return trimmed;
+      }
       return `https://${trimmed}`;
     }
 
@@ -140,16 +186,12 @@ function HomeProjects() {
     return "Client Unassigned";
   };
 
-  const selectedProjectImage = selectedProject?.images?.length
-    ? resolveImageUrl(selectedProject.images[0], 0)
-    : getFallbackImage(0);
-
   return (
     <section className="home-projects-section" id="projects-showcase">
       <div className="home-projects-container">
         {/* Section Header */}
         <div className="home-projects-header">
-          <span className="sub-title">Portfolios & Case Studies</span>
+          <span className="sub-title">Selected Projects</span>
           <h2>Our Featured Construction Projects</h2>
           <p>
             Explore our finished landmarks, active site developments, structural engineering projects, and client developments.
@@ -213,7 +255,6 @@ function HomeProjects() {
                     <span className={`card-status-badge ${statusInfo.className}`}>
                       {statusInfo.text}
                     </span>
-                    <span className="card-code-tag">{project.projectCode || "PRJ-WEM"}</span>
                   </div>
 
                   {/* Card Content */}
@@ -239,7 +280,7 @@ function HomeProjects() {
                     {/* Meta Details with ETB Birr */}
                     <div className="card-details-grid">
                       <span><FaMapMarkerAlt style={{ color: "#0066cc" }} /> {project.location || "Ethiopia"}</span>
-                      <span><FaCoins style={{ color: "#16a34a" }} /> {(project.budget || 0).toLocaleString()} Birr</span>
+                      <span><FaCoins style={{ color: "#16a34a" }} /> </span>
                     </div>
 
                     {/* Progress Bar */}
@@ -256,13 +297,6 @@ function HomeProjects() {
                       </div>
                     </div>
 
-                    {/* Action Button */}
-                    <button
-                      className="btn-view-details"
-                      onClick={() => setSelectedProject(project)}
-                    >
-                      <FaEye /> View Full Details
-                    </button>
                   </div>
                 </div>
               );
@@ -271,142 +305,6 @@ function HomeProjects() {
         )}
       </div>
 
-      {/* PUBLIC PROJECT DETAILS MODAL */}
-      {selectedProject && (
-        <div className="pub-modal-backdrop" onClick={() => setSelectedProject(null)}>
-          <div className="pub-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="pub-modal-header">
-              <div>
-                <span className="pub-code">{selectedProject.projectCode || "PRJ-001"}</span>
-                <h2>{selectedProject.projectName}</h2>
-              </div>
-              <button
-                className="pub-modal-close"
-                onClick={() => setSelectedProject(null)}
-              >
-                &times;
-              </button>
-            </div>
-
-            <div className="pub-modal-body">
-              {/* Status Banner */}
-              <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "20px", flexWrap: "wrap" }}>
-                <span className={`card-status-badge ${getStatusBadge(selectedProject.status).className}`} style={{ position: "static" }}>
-                  {getStatusBadge(selectedProject.status).text}
-                </span>
-                <span style={{ fontSize: "14px", color: "#475569" }}>
-                  Progress: <strong>{selectedProject.progress || 0}%</strong>
-                </span>
-              </div>
-
-              <div style={{ marginBottom: "24px", borderRadius: "16px", overflow: "hidden", border: "1px solid #e2e8f0", background: "#fff" }}>
-                <img
-                  src={selectedProjectImage}
-                  alt={selectedProject.projectName}
-                  style={{ width: "100%", maxHeight: "320px", objectFit: "cover", display: "block" }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = getFallbackImage(0);
-                  }}
-                />
-              </div>
-
-              {/* Grid Metadata */}
-              <div className="card-details-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", fontSize: "14px", gap: "16px", background: "#f8fafc", padding: "18px", borderRadius: "12px", marginBottom: "24px" }}>
-                <div>
-                  <small style={{ display: "block", color: "#64748b" }}>Client Name</small>
-                  <strong><FaUserTie style={{ color: "#ff6b00" }} /> {getClientName(selectedProject.client)}</strong>
-                </div>
-                <div>
-                  <small style={{ display: "block", color: "#64748b" }}>Location</small>
-                  <strong><FaMapMarkerAlt style={{ color: "#0066cc" }} /> {selectedProject.location || "Addis Ababa, Ethiopia"}</strong>
-                </div>
-                <div>
-                  <small style={{ display: "block", color: "#64748b" }}>Total Budget</small>
-                  <strong><FaCoins style={{ color: "#16a34a" }} /> {(selectedProject.budget || 0).toLocaleString()} ETB Birr</strong>
-                </div>
-                <div>
-                  <small style={{ display: "block", color: "#64748b" }}>Start Date</small>
-                  <strong><FaCalendarAlt /> {selectedProject.startDate ? new Date(selectedProject.startDate).toLocaleDateString() : "N/A"}</strong>
-                </div>
-                <div>
-                  <small style={{ display: "block", color: "#64748b" }}>Completion Date</small>
-                  <strong><FaCalendarAlt /> {selectedProject.endDate ? new Date(selectedProject.endDate).toLocaleDateString() : "Ongoing Project"}</strong>
-                </div>
-              </div>
-
-              {/* Full Description */}
-              <div style={{ marginBottom: "24px", background: "#ffffff", padding: "16px", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
-                <h4 style={{ margin: "0 0 8px", fontSize: "16px", color: "#0f172a" }}>Project Overview & Description</h4>
-                <p style={{ margin: 0, color: "#475569", lineHeight: "1.7", fontSize: "15px" }}>
-                  {selectedProject.description || "High standard construction and engineering development executed by Wemaster Construction PLC with full architectural compliance and structural safety."}
-                </p>
-              </div>
-
-              {/* Project Images Gallery */}
-              <div style={{ marginBottom: "24px" }}>
-                <h4 style={{ margin: "0 0 12px", fontSize: "16px", color: "#0f172a" }}>Project Site Photos</h4>
-                <div className="pub-gallery-grid">
-                  {(selectedProject.images && selectedProject.images.length > 0 ? selectedProject.images : [
-                    { url: getFallbackImage(0) },
-                    { url: getFallbackImage(1) }
-                  ]).map((img, i) => {
-                    const imgUrl = resolveImageUrl(img, i);
-                    return (
-                      <div key={i} className="pub-gallery-item">
-                        <img
-                          src={imgUrl}
-                          alt={img.name || "Project site"}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = getFallbackImage(i);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Assigned Engineers & Team if available */}
-              {(selectedProject.engineers?.length > 0 || selectedProject.employees?.length > 0) && (
-                <div style={{ marginBottom: "24px", background: "#f8fafc", padding: "16px", borderRadius: "12px" }}>
-                  <h4 style={{ margin: "0 0 12px", fontSize: "16px", color: "#0f172a" }}>Assigned Engineering Team</h4>
-                  <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-                    {selectedProject.engineers?.map((eng, idx) => (
-                      <div key={idx} style={{ fontSize: "14px", color: "#334155" }}>
-                        <FaHardHat style={{ color: "#ff6b00" }} /> <strong>{eng.fullName || eng}</strong>
-                      </div>
-                    ))}
-                    {selectedProject.employees?.map((emp, idx) => (
-                      <div key={idx} style={{ fontSize: "14px", color: "#334155" }}>
-                        <FaUsers style={{ color: "#0066cc" }} /> <strong>{emp.fullName || emp}</strong>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Project Documents if any */}
-              {selectedProject.documents && selectedProject.documents.length > 0 && (
-                <div>
-                  <h4 style={{ margin: "0 0 12px", fontSize: "16px", color: "#0f172a" }}>Public Documents & Specifications</h4>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    {selectedProject.documents.map((doc, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f8fafc", padding: "10px 16px", borderRadius: "8px" }}>
-                        <span><FaFileAlt style={{ color: "#0066cc" }} /> {doc.name}</span>
-                        <a href={doc.url} target="_blank" rel="noreferrer" style={{ color: "#ff6b00", fontWeight: "700", textDecoration: "none", fontSize: "13px" }}>
-                          Open Document &rarr;
-                        </a>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

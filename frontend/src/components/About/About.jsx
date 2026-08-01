@@ -22,16 +22,6 @@ function About() {
           Building Excellence
         </h2>
 
-        <p>
-          WEMASTER Construction PLC delivers
-          high-quality residential, commercial and
-          industrial construction projects.
-          Our experienced professionals combine
-          innovation, quality craftsmanship and
-          modern technology to build structures
-          that stand the test of time.
-        </p>
-
         <div className="about-text">
           <p>
             Wemaster Construction and Engineering PLC is a registered company under Ethiopian federal trade registration and licensing office. The company is committed to driving services in electrical and electromechanical system design, maintenance, construction materials and equipment’s wholesale, software development and interior design and finishing works. This reflects our broader aim to be a multidisciplinary engineering and construction company capable of handling complex and diverse projects.
@@ -40,6 +30,8 @@ function About() {
           <p>
             As Ethiopia continues to experience rapid urbanization, infrastructure growth, and energy demand, Wemaster is well-positioned to contribute to national development goals by delivering high-impact, reliable, and innovative construction services.
           </p>
+
+          <p><strong>Colaborate and Construct</strong></p>
         </div>
 
       </div>
