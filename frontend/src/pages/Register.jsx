@@ -113,6 +113,9 @@ function Register() {
         <p className="auth-link-text">
           Already have an account? <Link to="/login">Login</Link>
         </p>
+        <p className="auth-link-text">
+          <Link to="/">Go to Home</Link>
+        </p>
       </div>
     </div>
   );

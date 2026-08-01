@@ -102,6 +102,9 @@ function Login() {
         <p className="auth-link-text">
           Don’t have an account? <Link to="/register">Register</Link>
         </p>
+        <p className="auth-link-text">
+          <Link to="/">Go to Home</Link>
+        </p>
       </div>
     </div>
   );

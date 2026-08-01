@@ -190,7 +190,7 @@ function HomeProjects() {
       <div className="home-projects-container">
         {/* Section Header */}
         <div className="home-projects-header">
-          <span className="sub-title">Selected Projects</span>
+          <span className="sub-title">Some Selected Projects</span>
           <h2>Our Featured Construction Projects</h2>
           <p>
             Explore our finished construction and construction related projects, finished sites, active developments.
