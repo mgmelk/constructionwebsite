@@ -194,29 +194,18 @@ function HomeProjects() {
           <span className="sub-title">Selected Projects</span>
           <h2>Our Featured Construction Projects</h2>
           <p>
-            Explore our finished landmarks, active site developments, structural engineering projects, and client developments.
+            Some selected Projects
+            <br />
+            Explore our finished construction and construction related projects, finished sites, active developments.
           </p>
         </div>
 
-        {/* Classification Filter Tabs */}
         <div className="home-projects-tabs">
           <button
             className={`tab-btn ${activeTab === "All" ? "active" : ""}`}
             onClick={() => setActiveTab("All")}
           >
             All Projects ({projects.length})
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "Active" ? "active" : ""}`}
-            onClick={() => setActiveTab("Active")}
-          >
-            Active Projects (10)
-          </button>
-          <button
-            className={`tab-btn ${activeTab === "Finished" ? "active" : ""}`}
-            onClick={() => setActiveTab("Finished")}
-          >
-            Finished Projects ({projects.filter((p) => p.status === "Completed").length})
           </button>
         </div>
 
