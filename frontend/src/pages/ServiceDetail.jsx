@@ -61,6 +61,19 @@ function ServiceDetail() {
               <p className="service-paragraph">{service.intro}</p>
             )}
           </div>
+
+          {service.detailImage && (
+            <div className="service-detail-image">
+              <img src={service.detailImage} alt={`${service.title} illustration`} />
+            </div>
+          )}
+
+          {service.projectHighlight && (
+            <div className="project-highlight-box">
+              <h3>Project Highlight</h3>
+              <p>{service.projectHighlight}</p>
+            </div>
+          )}
         </section>
 
         {/* Why Choose / Services List Section */}

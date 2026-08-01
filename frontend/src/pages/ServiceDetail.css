@@ -166,6 +166,40 @@
   margin: 0;
 }
 
+.service-detail-image {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.service-detail-image img {
+  width: 100%;
+  max-width: 980px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.project-highlight-box {
+  margin-top: 24px;
+  padding: 24px 28px;
+  border-radius: 14px;
+  background: #f7f4e9;
+  border: 1px solid #f1e3c8;
+}
+
+.project-highlight-box h3 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  color: #0f2f3f;
+}
+
+.project-highlight-box p {
+  margin: 0;
+  color: #334155;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
 /* Why Choose Section & Cards */
 .why-choose-grid {
   display: grid;

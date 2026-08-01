@@ -1,8 +1,15 @@
+import wholesaleImage from "../assets/images/wholesale.png";
+import electricImage from "../assets/images/electric.jpg";
+import softwareImage from "../assets/images/software.jpg";
+import finishingImage from "../assets/images/finishing.jpg";
+
 export const services = [
   {
     slug: "wholesale-construction-materials-and-equipments",
     title: "Wholesale Construction Materials and Equipment",
     categoryBadge: "WHOLESALE SUPPLY & EQUIPMENT",
+    detailImage: wholesaleImage,
+    projectHighlight: "Construction material : Cement supply to Castel Realestate construction project.",
     shortDescription:
       "Reliable supply of high-grade construction materials, tools, and heavy machinery for projects of every scale.",
     heroTitle: "Wholesale Construction Materials and Equipment",
@@ -29,6 +36,8 @@ export const services = [
     slug: "electrical-and-electromechanical-works",
     title: "Electrical and Electromechanical Works",
     categoryBadge: "ENGINEERING & ELECTROMECHANICAL",
+    detailImage: electricImage,
+    projectHighlight: "New çonnection and transformer Erection for Addis Ababa riverside project.",
     shortDescription:
       "Complete electrical installations, power systems and electromechanical services.",
     heroTitle: "Electrical and Electromechanical Works",
@@ -57,6 +66,8 @@ export const services = [
     slug: "software-development",
     title: "Software Development",
     categoryBadge: "DIGITAL & ENTERPRISE TECHNOLOGY",
+    detailImage: softwareImage,
+    projectHighlight: "Genbinet.com digital system integration for construction sector stakeholders in Ethiopia.",
     shortDescription:
       "Custom digital solutions for construction management, operations, and business efficiency.",
     heroTitle: "Software Development",
@@ -85,6 +96,8 @@ export const services = [
     slug: "building-design-and-finishing-works",
     title: "Building Design and Finishing Works",
     categoryBadge: "ARCHITECTURE & FINISHING",
+    detailImage: finishingImage,
+    projectHighlight: "Partition wall construction for Meklit Microfinance branch office.",
     shortDescription:
       "Architectural planning, interior design, and finishing services that bring function and beauty together.",
     heroTitle: "Building Design and Finishing Works",
