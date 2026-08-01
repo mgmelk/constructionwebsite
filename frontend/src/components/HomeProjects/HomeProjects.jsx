@@ -103,7 +103,7 @@ function HomeProjects() {
       const visibleProjects = apiProjects.filter((project) => !isExcludedProject(project));
 
       if (visibleProjects.length > 0) {
-        setProjects(visibleProjects);
+        setProjects(SAMPLE_PROJECTS);
       } else {
         setProjects(SAMPLE_PROJECTS);
       }
