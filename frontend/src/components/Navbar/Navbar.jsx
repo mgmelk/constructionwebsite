@@ -9,13 +9,13 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="logo">
+      <Link to="/" className="logo">
         <img src={logoImage} alt="Wemaster logo" className="logo-icon" />
         <div className="logo-text">
           <h2>WEMASTER</h2>
           <span>CONSTRUCTION PLC</span>
         </div>
-      </div>
+      </Link>
 
       <button
         className="menu-toggle"

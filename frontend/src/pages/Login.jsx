@@ -35,6 +35,9 @@ function Login() {
       localStorage.setItem("adminName", displayName);
       localStorage.setItem("userName", displayName);
       localStorage.setItem("userEmail", user?.email || formData.email.trim().toLowerCase());
+      if (user?._id) {
+        localStorage.setItem("userId", user._id);
+      }
 
       if (user?.role === "admin") {
         navigate("/admin/dashboard", { replace: true });

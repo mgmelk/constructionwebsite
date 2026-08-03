@@ -4,8 +4,17 @@ import './index.css'
 import App from './App.jsx'
 import axios from 'axios'
 
+const normalizeApiBaseUrl = (value) => {
+  if (!value) return '';
+  return value.replace(/\/+$/, '');
+};
+
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
-axios.defaults.baseURL = configuredApiUrl || "";
+const fallbackApiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? ''
+  : 'https://constructionwebsite-8h8j.onrender.com';
+
+axios.defaults.baseURL = normalizeApiBaseUrl(configuredApiUrl || fallbackApiUrl);
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(

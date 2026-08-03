@@ -1,10 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "../components/Contact/Contact.css";
 
 function Contact() {
   return (
     <section className="contact-page">
       <div className="contact-inner">
+        <div className="contact-top-actions">
+          <Link to="/" className="btn-home-contact">
+            Home
+          </Link>
+        </div>
         <p>Reach us for construction materials, electrical works, software services, and building design.</p>
         <div className="contact-details">
           <div>

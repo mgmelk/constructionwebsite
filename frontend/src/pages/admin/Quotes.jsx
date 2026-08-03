@@ -17,6 +17,7 @@ function Quotes() {
     otherCost: "",
     estimatedDays: "",
     message: "",
+    budget: "",
   });
   const [emailData, setEmailData] = useState({
     subject: "",
@@ -57,8 +58,19 @@ function Quotes() {
 
   const selectQuote = (quote) => {
     console.log("Selected quote:", quote);
-    setSelectedQuote(quote);
-    setSelectedQuoteId(quote._id || quote.id || null);
+    const normalizedQuote = {
+      ...quote,
+      _id: quote._id || quote.id,
+      id: quote._id || quote.id,
+      companyName: quote.companyName || "",
+      address: quote.address || "",
+      phone: quote.phone || "",
+      details: quote.details || "No details provided.",
+      status: quote.status || "Pending",
+    };
+
+    setSelectedQuote(normalizedQuote);
+    setSelectedQuoteId(normalizedQuote._id || null);
     setStatusMessage("");
     setEstimateData({
       materialsCost: quote.estimate?.materialsCost || "",
@@ -66,10 +78,11 @@ function Quotes() {
       otherCost: quote.estimate?.otherCost || "",
       estimatedDays: quote.estimate?.estimatedDays || "",
       message: quote.estimate?.message || "",
+      budget: quote.budget || "",
     });
     setEmailData({
-      subject: `Estimate for ${quote.projectType} project`,
-      message: `Hello ${quote.fullName},\n\nWe have prepared a budget estimate for your ${quote.projectType} project. Please review the costs and let us know if you have any questions.`,
+      subject: `Budget Estimate for ${normalizedQuote.projectType} project`,
+      message: `Hello ${normalizedQuote.fullName},\n\nWe have prepared a detailed budget estimate for your ${normalizedQuote.projectType} project.\n\nProject: ${normalizedQuote.projectType}\nSize: ${normalizedQuote.projectSize}\nClient: ${normalizedQuote.companyName || normalizedQuote.fullName}\n\nPlease review the estimate and reply if you would like to proceed or discuss changes.`,
     });
   };
 
@@ -88,13 +101,14 @@ function Quotes() {
           otherCost: estimateData.otherCost,
           estimatedDays: estimateData.estimatedDays,
           message: estimateData.message,
+          budget: estimateData.budget,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      setStatusMessage("Estimate saved successfully.");
+      setStatusMessage("Budget estimate saved successfully. You can now send it to the client.");
       const updatedQuote = response.data.quote;
       setSelectedQuote(updatedQuote);
       setQuotes((prev) => prev.map((q) => (q._id === updatedQuote._id ? updatedQuote : q)));
@@ -121,13 +135,14 @@ function Quotes() {
         }
       );
 
-      setStatusMessage("Email sent to client successfully.");
+      setStatusMessage(response.data.message || "Email sent to client successfully.");
       setPreviewUrl(response.data.previewUrl || "");
       const updatedQuote = response.data.quote;
       setSelectedQuote(updatedQuote);
       setQuotes((prev) => prev.map((q) => (q._id === updatedQuote._id ? updatedQuote : q)));
     } catch (err) {
-      setStatusMessage(err.response?.data?.message || "Unable to send email.");
+      const backendMessage = err.response?.data?.message || err.message || "Unable to send email.";
+      setStatusMessage(backendMessage);
       setPreviewUrl("");
     }
   };
@@ -196,22 +211,36 @@ function Quotes() {
                   <p>Click the View button for any row in the table to show the quote summary and estimate actions.</p>
                 </div>
               ) : (
-                <>
+                <div className="admin-quote-detail-content">
                   <div className="admin-quote-detail-header">
-                    <h2>Quote for {selectedQuote.fullName}</h2>
-                    <p>{selectedQuote.companyName} — {selectedQuote.projectType} / {selectedQuote.projectSize}</p>
+                    <h2>Client Quote Details</h2>
+                    <p className="admin-quote-highlight">{selectedQuote.fullName} • {selectedQuote.companyName || "Individual Client"}</p>
+                    <p>{selectedQuote.projectType} / {selectedQuote.projectSize}</p>
                     <p className="admin-quote-status">Current status: {selectedQuote.status}</p>
                   </div>
 
                   <div className="admin-quote-summary">
-                    <p><strong>Details:</strong> {selectedQuote.details}</p>
+                    <p><strong>Project details:</strong> {selectedQuote.details}</p>
                     <p><strong>Address:</strong> {selectedQuote.address || "Not provided"}</p>
-                    <p><strong>Contact Phone:</strong> {selectedQuote.phone}</p>
+                    <p><strong>Contact phone:</strong> {selectedQuote.phone}</p>
                   </div>
 
+                  <div className="admin-quote-summary-box">
+                    <p><strong>Ready to send to client:</strong></p>
+                    <p>Budget, estimate details, and an email message are ready below.</p>
+                  </div>
                   <form className="admin-quote-form" onSubmit={handleEstimateSubmit}>
-                    <h3>Estimate Cost Breakdown</h3>
+                    <h3>Budget & Estimate Details</h3>
                     <div className="quote-grid">
+                      <label>
+                        Budget Amount (Birr)
+                        <input
+                          type="text"
+                          value={estimateData.budget}
+                          onChange={(e) => setEstimateData({ ...estimateData, budget: e.target.value })}
+                          placeholder="e.g. 450,000 Birr"
+                        />
+                      </label>
                       <label>
                         Materials Cost
                         <input
@@ -254,7 +283,7 @@ function Quotes() {
                     </div>
 
                     <label className="quote-details-label">
-                      Optional estimate note
+                      Optional estimate note for the client
                       <textarea
                         rows={4}
                         value={estimateData.message}
@@ -267,7 +296,12 @@ function Quotes() {
                   </form>
 
                   <form className="admin-quote-form" onSubmit={handleSendEmail}>
-                    <h3>Send Cost Estimate by Email</h3>
+                    <h3>Send Budget to Client</h3>
+                    <div className="admin-quote-summary-box">
+                      <p><strong>Client:</strong> {selectedQuote.fullName}</p>
+                      <p><strong>Budget:</strong> {estimateData.budget || "Not provided yet"}</p>
+                      <p><strong>Estimated Total:</strong> {estimateData.materialsCost && estimateData.laborCost && estimateData.otherCost ? `${(Number(estimateData.materialsCost) + Number(estimateData.laborCost) + Number(estimateData.otherCost)).toLocaleString()} Birr` : "Pending"}</p>
+                    </div>
                     <label>
                       Subject
                       <input
@@ -286,7 +320,7 @@ function Quotes() {
                         required
                       />
                     </label>
-                    <button type="submit">Send Estimate Email</button>
+                    <button type="submit">Send Budget to Client</button>
                   </form>
 
                   {statusMessage && <p className="admin-quote-status-message">{statusMessage}</p>}
@@ -295,7 +329,7 @@ function Quotes() {
                       Email preview: <a href={previewUrl} target="_blank" rel="noreferrer">Open test email</a>
                     </p>
                   )}
-                </>
+                </div>
               )}
             </div>
           </div>

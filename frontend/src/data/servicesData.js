@@ -14,11 +14,9 @@ export const services = [
       "Reliable supply of high-grade construction materials, tools, and heavy machinery for projects of every scale.",
     heroTitle: "Wholesale Construction Materials and Equipment",
     intro:
-      "At WEMASTER Construction PLC, we are committed to supplying high-quality construction materials, modern equipment, and reliable tools that support projects of every size—from residential homes to large commercial and industrial developments.",
+      "We supply quality construction materials, tools, and equipment for every project, with fast delivery and trusted support.",
     descriptionParagraphs: [
-      "At WEMASTER Construction PLC, we are committed to supplying high-quality construction materials, modern equipment, and reliable tools that support projects of every size—from residential homes to large commercial and industrial developments.",
-      "We partner with trusted manufacturers and suppliers to ensure that every product meets industry standards for quality, durability, and safety. Our extensive inventory includes cement, steel products, aggregates, roofing materials, electrical and plumbing supplies, finishing materials, heavy machinery, and a wide range of construction tools.",
-      "Whether you are a contractor, developer, engineer, or individual builder, our experienced team is ready to help you select the right materials and equipment for your project. We focus on timely delivery, competitive pricing, and exceptional customer service to keep your construction schedule on track."
+      "WEMASTER Construction PLC delivers premium materials and modern equipment across all project sizes, backed by a reliable supply chain, competitive pricing, and on-time delivery."
     ],
     serviceListTitle: "Why Choose WEMASTER Construction PLC?",
     whyChooseList: [

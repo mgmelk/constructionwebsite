@@ -13,7 +13,7 @@ function ServiceDetail() {
         <h2>Service Not Found</h2>
         <p>The service you are looking for does not exist or has been moved.</p>
         <Link to="/" className="btn-primary">
-          ← Back to Home
+          Home
         </Link>
       </div>
     );
@@ -24,6 +24,12 @@ function ServiceDetail() {
       {/* Hero Header */}
       <div className="service-detail-hero">
         <div className="service-hero-container">
+          <div className="service-detail-header-top">
+            <Link to="/" className="btn-home-top">
+              Home
+            </Link>
+          </div>
+
           <div className="breadcrumb">
             <Link to="/">Home</Link> / <span>Services</span> / <span className="active-breadcrumb">{service.title}</span>
           </div>
@@ -32,14 +38,6 @@ function ServiceDetail() {
           <h1>{service.heroTitle || service.title}</h1>
           <p className="service-detail-intro">{service.intro}</p>
 
-          <div className="service-hero-actions">
-            <Link to="/quote" className="btn-quote">
-              Request a Custom Quote <FaArrowRight />
-            </Link>
-            <Link to="/" className="btn-back">
-              ← Back to Home
-            </Link>
-          </div>
         </div>
       </div>
 

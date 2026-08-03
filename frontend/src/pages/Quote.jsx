@@ -54,7 +54,11 @@ function Quote() {
       console.error("Quote submit error:", err);
       const status = err.response?.status;
       const serverMessage = err.response?.data?.message;
-      setError(`${status ? status + ": " : ""}${serverMessage || err.message || "Unable to submit quote request."}`);
+      const isNetworkError = err.code === "ERR_NETWORK" || err.message === "Network Error";
+      const fallbackMessage = isNetworkError
+        ? "The quote service is currently unavailable. Please try again in a moment."
+        : "Unable to submit quote request.";
+      setError(`${status ? status + ": " : ""}${serverMessage || fallbackMessage}`);
     } finally {
       setLoading(false);
     }

@@ -213,14 +213,21 @@ const getPendingReceipts = async (req, res) => {
     try {
         const Project = require("../models/Project");
 
-        const projects = await Project.find({ "payments.status": "Pending Approval" })
+        const projects = await Project.find({
+            $or: [
+                { "payments.status": "Pending Approval" },
+                { "payments.receiptUrl": { $ne: "" } },
+                { "payments.receiptRef": { $ne: "" } },
+            ],
+        })
             .populate("client", "fullName email")
             .sort({ updatedAt: -1 });
 
         const pending = [];
         projects.forEach((proj) => {
             (proj.payments || []).forEach((p) => {
-                if (p.status === "Pending Approval") {
+                const hasReceipt = Boolean(p.receiptUrl || p.receiptRef);
+                if (p.status === "Pending Approval" || hasReceipt) {
                     pending.push({
                         projectId: proj._id,
                         projectName: proj.projectName,
@@ -233,7 +240,7 @@ const getPendingReceipts = async (req, res) => {
                         receiptRef: p.receiptRef,
                         receiptUrl: p.receiptUrl,
                         description: p.description,
-                        status: p.status,
+                        status: p.status === "Paid" && hasReceipt ? "Paid (Receipt Submitted)" : p.status,
                         submittedAt: p.submittedAt || p.updatedAt || proj.updatedAt,
                     });
                 }

@@ -1,36 +1,38 @@
+const path = require("path");
+const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
+const { buildMailTransport } = require("./mailTransport");
+
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const sendEmail = async ({ to, subject, html, text }) => {
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
+  try {
+    const transporter = await buildMailTransport();
 
-  if (!smtpUser || !smtpPass) {
-    console.warn("SMTP credentials missing. Email not sent via network. Logging to console:");
-    console.log(`To: ${to}\nSubject: ${subject}\nText: ${text}`);
-    return { success: false, message: "SMTP credentials not configured" };
+    const mailOptions = {
+      from: process.env.SMTP_FROM || process.env.SMTP_USER || "quotes@construction.local",
+      to,
+      subject,
+      html,
+      text: text || html?.replace(/<[^>]*>?/gm, "") || "",
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    const previewUrl = nodemailer.getTestMessageUrl(info);
+    console.log(`Email sent successfully to ${to} (MessageId: ${info.messageId})`);
+    return {
+      success: true,
+      messageId: info.messageId,
+      previewUrl,
+      message: previewUrl ? `Preview: ${previewUrl}` : "Email sent successfully.",
+    };
+  } catch (error) {
+    console.error("sendEmail failed:", error);
+    return {
+      success: false,
+      message: error.message,
+    };
   }
-
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
-    secure: process.env.SMTP_SECURE === "true",
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.SMTP_FROM || `WEMASTER Construction <${smtpUser}>`,
-    to,
-    subject,
-    html,
-    text: text || html.replace(/<[^>]*>?/gm, ""),
-  };
-
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`Email sent successfully to ${to} (MessageId: ${info.messageId})`);
-  return { success: true, messageId: info.messageId };
 };
 
 module.exports = sendEmail;

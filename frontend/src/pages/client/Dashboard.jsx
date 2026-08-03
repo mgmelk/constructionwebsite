@@ -86,6 +86,8 @@ function ClientDashboard() {
 
   // Form States
   const [paymentAmount, setPaymentAmount] = useState("20000000");
+  const [paymentReason, setPaymentReason] = useState("");
+  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().slice(0, 10));
   const [paymentMethod, setPaymentMethod] = useState("Telebirr");
   const [selectedPaymentMilestone, setSelectedPaymentMilestone] = useState("INV-20M-01");
   const [receiptRefInput, setReceiptRefInput] = useState("");
@@ -103,6 +105,47 @@ function ClientDashboard() {
 
   const clientName = localStorage.getItem("userName") || localStorage.getItem("adminName") || "Melkamu Gatew";
   const clientEmail = localStorage.getItem("userEmail") || "";
+
+  const persistReceiptState = (projects) => {
+    try {
+      const submittedMap = {};
+      (projects || []).forEach((project) => {
+        (project.payments || []).forEach((payment) => {
+          if (payment.receiptSubmitted || payment.status === "Paid" || payment.receiptRef || payment.receiptUrl) {
+            submittedMap[`${project._id}:${payment.id || payment._id || ""}`] = true;
+          }
+        });
+      });
+      localStorage.setItem("clientReceiptState", JSON.stringify(submittedMap));
+    } catch (e) {
+      console.error("Failed to persist receipt state", e);
+    }
+  };
+
+  const restoreReceiptState = (projects) => {
+    try {
+      const saved = localStorage.getItem("clientReceiptState");
+      if (!saved) return projects;
+      const submittedMap = JSON.parse(saved);
+      return (projects || []).map((project) => ({
+        ...project,
+        payments: (project.payments || []).map((payment) => {
+          const key = `${project._id}:${payment.id || payment._id || ""}`;
+          if (submittedMap[key]) {
+            return {
+              ...payment,
+              receiptSubmitted: true,
+              status: payment.status === "Unpaid" ? "Paid" : payment.status,
+            };
+          }
+          return payment;
+        }),
+      }));
+    } catch (e) {
+      console.error("Failed to restore receipt state", e);
+      return projects;
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -153,10 +196,12 @@ function ClientDashboard() {
       });
 
       const projectsToShow = matchedProjects.length > 0 ? matchedProjects : allProjects;
+      const restoredProjects = restoreReceiptState(projectsToShow);
 
-      if (projectsToShow.length > 0) {
-        setClientProjects(projectsToShow);
-        setSelectedProject(projectsToShow[0]);
+      if (restoredProjects.length > 0) {
+        persistReceiptState(restoredProjects);
+        setClientProjects(restoredProjects);
+        setSelectedProject(restoredProjects[0]);
       } else {
         setClientProjects([DEFAULT_CLIENT_PROJECT]);
         setSelectedProject(DEFAULT_CLIENT_PROJECT);
@@ -172,7 +217,7 @@ function ClientDashboard() {
 
   const showNotification = (msg) => {
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(""), 4000);
+    setTimeout(() => setToastMsg(""), 5000);
   };
 
   const handleLogout = () => {
@@ -203,33 +248,164 @@ function ClientDashboard() {
 
   const handleOpenReceiptModal = (paymentId) => {
     setSelectedPaymentMilestone(paymentId);
+    setPaymentAmount("20000000");
+    setPaymentReason("");
+    setPaymentDate(new Date().toISOString().slice(0, 10));
+    setReceiptRefInput("");
+    setReceiptImageBase64("");
+    if (receiptFileInput.current) {
+      receiptFileInput.current.value = "";
+    }
     setActiveModal("payment");
+  };
+
+  const updateLocalReceiptSubmission = (paymentId, receiptInfo) => {
+    const normalizedPaymentId = String(paymentId || "");
+    const targetProjectId = selectedProject?._id;
+    const submissionTimestamp = new Date().toISOString();
+
+    setSelectedProject((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        payments: (prev.payments || []).map((payment) => {
+          const paymentKey = String(payment.id || payment._id || "");
+          if (paymentKey !== normalizedPaymentId) return payment;
+          const submittedAmount = Number(receiptInfo.amount) > 0 ? Number(receiptInfo.amount) : Number(payment.amount || 0);
+          return {
+            ...payment,
+            ...receiptInfo,
+            amount: submittedAmount,
+            reason: receiptInfo.reason || payment.reason,
+            paymentDate: receiptInfo.paymentDate || payment.paymentDate,
+            paymentMethod: receiptInfo.paymentMethod || payment.paymentMethod,
+            receiptRef: receiptInfo.receiptRef || payment.receiptRef,
+            receiptUrl: receiptInfo.receiptUrl || payment.receiptUrl,
+            status: "Paid",
+            submittedAt: submissionTimestamp,
+            receiptSubmitted: true,
+          };
+        }),
+      };
+    });
+
+    setClientProjects((prev) => {
+      const updatedProjects = prev.map((project) => {
+        if (String(project._id) !== String(targetProjectId)) return project;
+        return {
+          ...project,
+          payments: (project.payments || []).map((payment) => {
+            const paymentKey = String(payment.id || payment._id || "");
+            if (paymentKey !== normalizedPaymentId) return payment;
+            const submittedAmount = Number(receiptInfo.amount) > 0 ? Number(receiptInfo.amount) : Number(payment.amount || 0);
+            return {
+              ...payment,
+              ...receiptInfo,
+              amount: submittedAmount,
+              reason: receiptInfo.reason || payment.reason,
+              paymentDate: receiptInfo.paymentDate || payment.paymentDate,
+              paymentMethod: receiptInfo.paymentMethod || payment.paymentMethod,
+              receiptRef: receiptInfo.receiptRef || payment.receiptRef,
+              receiptUrl: receiptInfo.receiptUrl || payment.receiptUrl,
+              status: "Paid",
+              submittedAt: submissionTimestamp,
+              receiptSubmitted: true,
+            };
+          }),
+        };
+      });
+
+      persistReceiptState(updatedProjects);
+      return updatedProjects;
+    });
   };
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    setSubmittingReceipt(true);
+
+    if (!paymentAmount || Number(paymentAmount) <= 0) {
+      showNotification("Please enter a valid amount in Birr.");
+      return;
+    }
+
+    if (!paymentReason.trim()) {
+      showNotification("Please add a reason for payment.");
+      return;
+    }
+
+    const receiptUrl = receiptImageBase64 || "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80";
+    const receiptRef = receiptRefInput || `REF-${Date.now().toString().slice(-6)}`;
+    const selectedProjectId = selectedProject?._id ? String(selectedProject._id).trim() : null;
+    const validProjectId = selectedProjectId && /^[a-fA-F0-9]{24}$/.test(selectedProjectId) ? selectedProjectId : null;
+    const fallbackProject = (clientProjects || []).find((project) => {
+      const projectId = project?._id ? String(project._id).trim() : "";
+      return /^[a-fA-F0-9]{24}$/.test(projectId);
+    });
+    const resolvedProjectId = validProjectId || (fallbackProject ? String(fallbackProject._id).trim() : null) || selectedProject?.projectCode || selectedProject?.projectName || null;
+
+    if (selectedProjectId === "client-prj-101") {
+      console.log("Receipt submit blocked for sample project", { selectedProject });
+      showNotification("This is a sample project. Please log in with a real client account to submit a receipt.");
+      return;
+    }
+
+    const payload = {
+      receiptUrl,
+      amount: Number(paymentAmount) || 0,
+      reason: paymentReason.trim(),
+      paymentDate,
+      paymentMethod,
+      receiptRef,
+      projectId: resolvedProjectId,
+    };
+
+    if (!resolvedProjectId) {
+      console.log("Receipt submit failed: no project ID resolved", { selectedProject, clientProjects });
+      showNotification("Unable to identify project for receipt submission.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const projectRouteId = resolvedProjectId || selectedProject?.projectCode || selectedProject?.projectName || "resolve";
+    const encodedProjectRouteId = encodeURIComponent(projectRouteId);
+    const encodedPaymentId = encodeURIComponent(selectedPaymentMilestone || "");
+    const requestUrl = `/api/projects/${encodedProjectRouteId}/payments/${encodedPaymentId}/receipt`;
+
+    console.log("Submitting receipt", {
+      requestUrl,
+      payload,
+      tokenPresent: Boolean(token),
+      selectedPaymentMilestone,
+      resolvedProjectId,
+    });
+
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `/api/projects/${selectedProject._id}/payments/${selectedPaymentMilestone}/receipt`,
+      setSubmittingReceipt(true);
+      const res = await axios.post(
+        requestUrl,
+        payload,
         {
-          receiptUrl: receiptImageBase64 || "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
-          paymentMethod,
-          receiptRef: receiptRefInput || `REF-${Date.now().toString().slice(-6)}`,
-        },
-        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          timeout: 15000,
+        }
       );
-      setActiveModal(null);
+
+      console.log("Receipt submission success", { responseData: res.data });
+      updateLocalReceiptSubmission(selectedPaymentMilestone, payload);
       setReceiptImageBase64("");
       setReceiptRefInput("");
-      showNotification("Receipt submitted successfully!");
-      fetchClientData();
+      setPaymentAmount("20000000");
+      setPaymentReason("");
+      setPaymentDate(new Date().toISOString().slice(0, 10));
+      setActiveModal(null);
+      showNotification(res?.data?.message || "Successfully submitted!");
     } catch (err) {
       console.error("Receipt submission error:", err);
-      showNotification("Failed to submit receipt. Please try again.");
+      const errorMessage = err.response?.data?.message || err.message || "Receipt submission failed. Please try again.";
+      showNotification(errorMessage);
     } finally {
       setSubmittingReceipt(false);
+      console.log("Receipt submission end", { submittingReceipt: false });
     }
   };
 
@@ -353,10 +529,10 @@ function ClientDashboard() {
     <div className="client-dashboard-page">
       {/* TOP NAVIGATION BAR */}
       <header className="client-navbar">
-        <div className="client-nav-brand">
+        <Link to="/" className="client-nav-brand" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="brand-icon"><FaHardHat /></div>
           <h2>WEMASTER <span>CONSTRUCTION</span></h2>
-        </div>
+        </Link>
 
         <div className="client-nav-right">
           {/* Project Selector if multiple */}
@@ -498,68 +674,12 @@ function ClientDashboard() {
               </div>
             </div>
 
-            {/* SECTION 2: PROGRESS TRACKING & MILESTONES */}
+            {/* SECTION 4: CONTRACT BUDGET OVERVIEW */}
             <div className="dash-section-card">
               <div className="section-head">
-                <h2><FaCheckCircle className="sec-icon" /> Progress Tracking & Phase Milestones</h2>
-                <span style={{ fontSize: "14px", fontWeight: "700", color: "#ff6b00" }}>{selectedProject.progress ?? 0}% Overall</span>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="progress-interactive-bar">
-                <div className="bar-meta">
-                  <span>Construction Stage Completion</span>
-                  <span>{selectedProject.progress ?? 0}%</span>
-                </div>
-                <div className="bar-track">
-                  <div className="bar-fill-animated" style={{ width: `${selectedProject.progress ?? 0}%` }}></div>
-                </div>
-              </div>
-
-              {/* Milestone List */}
-              <div className="milestones-list">
-                {visibleMilestones.map((ms, idx) => (
-                  <div key={`${ms.title || idx}-${idx}`} className="milestone-item">
-                    <div className={`milestone-icon ${ms.status === "Completed" ? "ms-done" : ms.status === "In Progress" ? "ms-progress" : "ms-upcoming"}`}>
-                      {ms.status === "Completed" ? "✓" : idx + 1}
-                    </div>
-                    <div className="milestone-info">
-                      <h4>{ms.title}</h4>
-                      <p>{ms.date ? `${ms.date} • ` : ""}{Number(ms.progress || 0)}% Completed</p>
-                    </div>
-                    <span className={`milestone-badge ${ms.status === "Completed" ? "badge-done" : ms.status === "In Progress" ? "badge-inprog" : "badge-sched"}`}>
-                      {ms.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* SECTION 3: PROJECT TIMELINE */}
-            <div className="dash-section-card">
-              <div className="section-head">
-                <h2><FaCalendarAlt className="sec-icon" /> Chronological Project Timeline</h2>
-              </div>
-              <div className="timeline-stream">
-                {(selectedProject.timeline || DEFAULT_CLIENT_PROJECT.timeline).map((item, i) => (
-                  <div key={i} className="timeline-node">
-                    <div className="node-dot"></div>
-                    <div className="node-content">
-                      <span>{item.date}</span>
-                      <h4>{item.title}</h4>
-                      <p>{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* SECTION 4: BUDGET & PAYMENT SUMMARY */}
-            <div className="dash-section-card">
-              <div className="section-head">
-                <h2><FaCoins className="sec-icon" /> Budget & Financial Payment Summary</h2>
-                <button className="doc-btn-download" onClick={() => setActiveModal("payment")}>
-                  <FaCreditCard /> Make Payment
+                <h2><FaCoins className="sec-icon" /> Contract Budget Overview</h2>
+                <button className="doc-btn-download" onClick={() => handleOpenReceiptModal(selectedPaymentMilestone || "INV-20M-01")} style={{ background: "#ff6b00", color: "white", border: "none" }}>
+                  <FaCreditCard /> Submit Receipt
                 </button>
               </div>
 
@@ -576,66 +696,6 @@ function ClientDashboard() {
                   <label>Remaining Balance</label>
                   <h3 style={{ color: "#ea580c" }}>{remainingBalance.toLocaleString()} Birr</h3>
                 </div>
-              </div>
-
-              {/* Payments Table */}
-              <div className="payments-table-wrapper">
-                <table className="payments-table">
-                  <thead>
-                    <tr>
-                      <th>Invoice ID</th>
-                      <th>Description</th>
-                      <th>Amount (ETB)</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th>Receipt</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selectedProject.payments || DEFAULT_CLIENT_PROJECT.payments).map((pay, idx) => (
-                      <tr key={idx}>
-                        <td><strong>{pay.id}</strong></td>
-                        <td>{pay.description}</td>
-                        <td><strong>{pay.amount.toLocaleString()} Birr</strong></td>
-                        <td>{pay.date}</td>
-                        <td>
-                          <span className={`milestone-badge ${pay.status === "Paid" ? "badge-done" : pay.status === "Pending Approval" ? "badge-sched" : "badge-inprog"}`}>
-                            {pay.status}
-                          </span>
-                        </td>
-                        <td style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-start" }}>
-                          {pay.status !== "Paid" ? (
-                            <button
-                              type="button"
-                              onClick={() => handleOpenReceiptModal(pay.id || pay._id)}
-                              style={{
-                                border: "none",
-                                borderRadius: "8px",
-                                background: pay.status === "Pending Approval" ? "#fbbf24" : "#0f172a",
-                                color: pay.status === "Pending Approval" ? "#0f172a" : "white",
-                                padding: "8px 10px",
-                                cursor: "pointer",
-                                fontWeight: "700",
-                                fontSize: "13px",
-                              }}
-                            >
-                              {pay.status === "Pending Approval" ? "View Receipt" : "Submit Receipt"}
-                            </button>
-                          ) : (
-                            <span style={{ fontSize: "13px", color: "#16a34a", fontWeight: "700" }}>
-                              Submitted
-                            </span>
-                          )}
-                          {pay.receiptRef && (
-                            <small style={{ color: "#475569", fontSize: "12px" }}>
-                              Ref: {pay.receiptRef}
-                            </small>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             </div>
 
@@ -734,38 +794,6 @@ function ClientDashboard() {
 
           {/* RIGHT COLUMN - SIDEBAR QUICK ACTIONS & NOTIFICATIONS */}
           <div className="right-column">
-            
-            {/* QUICK ACTIONS PANEL */}
-            <div className="dash-section-card">
-              <div className="section-head">
-                <h2>Quick Actions</h2>
-              </div>
-              <div className="quick-actions-grid">
-                <button className="qa-btn" onClick={() => {
-                  document.getElementById("gallery-section")?.scrollIntoView({ behavior: "smooth" });
-                }}>
-                  <FaImages className="qa-icon" />
-                  Site Gallery
-                </button>
-
-                <button className="qa-btn" onClick={() => setActiveModal("payment")}>
-                  <FaCreditCard className="qa-icon" />
-                  Make Payment
-                </button>
-
-                <button className="qa-btn" onClick={() => {
-                  document.getElementById("messages-section")?.scrollIntoView({ behavior: "smooth" });
-                }}>
-                  <FaComments className="qa-icon" />
-                  Message Admin
-                </button>
-
-                <button className="qa-btn" onClick={() => setActiveModal("change_request")}>
-                  <FaEdit className="qa-icon" />
-                  Change Request
-                </button>
-              </div>
-            </div>
 
             {/* PROJECT ENGINEER & TEAM CONTACT CARD */}
             <div className="dash-section-card" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", color: "white" }}>
@@ -805,25 +833,6 @@ function ClientDashboard() {
               </button>
             </div>
 
-            {/* RECENT ACTIVITY & UPDATES */}
-            <div className="dash-section-card">
-              <div className="section-head">
-                <h2><FaBell className="sec-icon" /> Recent Activity & Updates</h2>
-              </div>
-              <div className="notif-feed">
-                {(selectedProject.updates || DEFAULT_CLIENT_PROJECT.updates).map((up, i) => (
-                  <div key={i} className="notif-feed-item">
-                    <div className="notif-dot"></div>
-                    <div>
-                      <strong style={{ display: "block", color: "#0f172a" }}>{up.title}</strong>
-                      <span style={{ fontSize: "12px", color: "#64748b" }}>{up.time}</span>
-                      <p style={{ margin: "4px 0 0", color: "#475569", fontSize: "13px" }}>{up.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
@@ -849,13 +858,31 @@ function ClientDashboard() {
                   />
                 </div>
                 <div>
-                  <label>Select Milestone Installment to Pay</label>
-                  <select value={selectedPaymentMilestone} onChange={(e) => setSelectedPaymentMilestone(e.target.value)}>
-                    <option value="INV-20M-01">Phase 1 Milestone (20 Million ETB)</option>
-                    <option value="INV-30M-02">Phase 2 Milestone (30 Million ETB)</option>
-                    <option value="INV-50M-03">Phase 3 Milestone (50 Million ETB)</option>
-                    <option value="INV-50M-04">Phase 4 Milestone (50 Million ETB)</option>
-                  </select>
+                  <label>Amount in Birr</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 20000000"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Reason for Payment</label>
+                  <textarea
+                    rows="3"
+                    placeholder="e.g. Phase 1 mobilization payment"
+                    value={paymentReason}
+                    onChange={(e) => setPaymentReason(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label>Payment Date</label>
+                  <input
+                    type="date"
+                    value={paymentDate}
+                    onChange={(e) => setPaymentDate(e.target.value)}
+                  />
                 </div>
                 <div>
                   <label>Payment Channel Method</label>
@@ -908,7 +935,7 @@ function ClientDashboard() {
               </div>
               <div className="modal-footer">
                 <button type="submit" className="btn-modal-action" disabled={submittingReceipt}>
-                  {submittingReceipt ? "Submitting Receipt..." : "Submit Receipt & Mark Paid"}
+                  {submittingReceipt ? "Submitting..." : "Submit Receipt & Mark Paid"}
                 </button>
               </div>
             </form>

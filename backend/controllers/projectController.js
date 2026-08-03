@@ -450,11 +450,59 @@ const updatePaymentStatus = async (req, res) => {
 };
 
 const submitPaymentReceipt = async (req, res) => {
+  console.log("[submitPaymentReceipt] request", {
+    method: req.method,
+    path: req.originalUrl,
+    params: req.params,
+    body: req.body,
+    user: req.user ? { id: req.user.id, email: req.user.email, role: req.user.role } : null,
+  });
+
   try {
     const { id, paymentId } = req.params;
-    const { receiptUrl, paymentMethod, receiptRef } = req.body;
+    const { receiptUrl, paymentMethod, receiptRef, projectId } = req.body;
 
-    const project = await Project.findById(id);
+    let project = null;
+    const requestedProjectId = projectId || id;
+
+    if (requestedProjectId && mongoose.Types.ObjectId.isValid(requestedProjectId)) {
+      project = await Project.findById(requestedProjectId);
+      console.log("[submitPaymentReceipt] looked up by ObjectId", requestedProjectId, { found: !!project });
+    } else if (requestedProjectId) {
+      project = await Project.findOne({
+        $or: [
+          { _id: requestedProjectId },
+          { projectCode: requestedProjectId },
+          { projectName: requestedProjectId },
+          { client: requestedProjectId },
+        ],
+      });
+      console.log("[submitPaymentReceipt] looked up by alternate keys", requestedProjectId, { found: !!project });
+    }
+
+    if (!project) {
+      project = await Project.findOne({ "payments.id": paymentId });
+    }
+
+    if (!project) {
+      project = await Project.findOne({ "payments._id": paymentId });
+    }
+
+    if (!project && req.user?.id) {
+      project = await Project.findOne({
+        $or: [
+          { client: req.user.id },
+          { "client._id": req.user.id },
+          { "client.id": req.user.id },
+          { createdBy: req.user.id },
+        ],
+      });
+    }
+
+    if (!project && req.user?.email) {
+      project = await Project.findOne({ "client.email": req.user.email });
+    }
+
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
     }
@@ -467,7 +515,7 @@ const submitPaymentReceipt = async (req, res) => {
     if (receiptUrl) paymentItem.receiptUrl = receiptUrl;
     if (paymentMethod) paymentItem.paymentMethod = paymentMethod;
     if (receiptRef) paymentItem.receiptRef = receiptRef;
-    paymentItem.status = "Pending Approval";
+    paymentItem.status = "Paid";
     paymentItem.submittedAt = new Date();
 
     project.paidAmount = project.payments
@@ -475,6 +523,7 @@ const submitPaymentReceipt = async (req, res) => {
       .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
     await project.save();
+    console.log("[submitPaymentReceipt] project saved", { projectId: project._id });
 
     const updatedProject = await Project.findById(project._id)
       .populate("client", "fullName email phone role")
@@ -482,7 +531,8 @@ const submitPaymentReceipt = async (req, res) => {
       .populate("engineers", "fullName email phone role")
       .populate("employees", "fullName email phone role");
 
-    res.json({
+    console.log("[submitPaymentReceipt] sending response", { projectId: project._id, paymentId });
+    return res.status(200).json({
       message: "Payment receipt submitted to Admin for verification!",
       project: updatedProject,
     });

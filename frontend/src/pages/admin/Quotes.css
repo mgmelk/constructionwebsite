@@ -48,6 +48,10 @@
   box-shadow: 0 12px 30px rgba(8, 25, 36, 0.08);
   padding: 24px;
   box-sizing: border-box;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
 }
 
 .admin-quotes-table-container {
@@ -92,6 +96,21 @@
   margin-bottom: 20px;
 }
 
+.admin-quote-highlight {
+  font-weight: 700;
+  color: #081924;
+  margin-top: 6px;
+}
+
+.admin-quote-detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  flex: 1;
+  min-width: 0;
+}
+
 .admin-quote-status {
   margin-top: 8px;
   font-weight: 700;
@@ -101,6 +120,19 @@
 .admin-quote-summary p {
   margin: 10px 0;
   color: #374151;
+}
+
+.admin-quote-summary-box {
+  background: #fff9e6;
+  border: 1px solid #f7d36b;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+
+.admin-quote-summary-box p {
+  margin: 6px 0;
+  color: #5f4d00;
 }
 
 .admin-quote-form {
@@ -131,6 +163,7 @@
   border: 1px solid #d8e0e7;
   border-radius: 10px;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .admin-quote-form button {

@@ -1,5 +1,8 @@
+const path = require("path");
 const dotenv = require("dotenv");
-dotenv.config();
+
+const backendEnvPath = path.resolve(__dirname, ".env");
+dotenv.config({ path: backendEnvPath });
 
 const express = require("express");
 const cors = require("cors");
@@ -46,7 +49,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const path = require("path");
 const fs = require("fs");
 
 const frontendDist = path.join(__dirname, "../frontend/dist");
@@ -149,14 +151,13 @@ const PORT = process.env.PORT || 5000;
 const listRoutes = () => {
   try {
     const routes = [];
-    app._router.stack.forEach((middleware) => {
-      if (middleware.route) {
-        // routes registered directly on the app
+    const stack = app._router?.stack || [];
+    stack.forEach((middleware) => {
+      if (middleware?.route) {
         routes.push(`${Object.keys(middleware.route.methods).join(',').toUpperCase()} ${middleware.route.path}`);
-      } else if (middleware.name === 'router' && middleware.handle && middleware.handle.stack) {
-        // router middleware
+      } else if (middleware?.name === 'router' && middleware?.handle?.stack) {
         middleware.handle.stack.forEach((handler) => {
-          if (handler.route) {
+          if (handler?.route) {
             routes.push(`${Object.keys(handler.route.methods).join(',').toUpperCase()} ${handler.route.path}`);
           }
         });

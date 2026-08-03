@@ -66,6 +66,7 @@ router.patch(
 // Client submit payment receipt photo / ref
 router.post(
   "/:id/payments/:paymentId/receipt",
+  protect,
   submitPaymentReceipt
 );
 

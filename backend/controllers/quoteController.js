@@ -1,5 +1,11 @@
+const path = require("path");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+
 const Quote = require("../models/Quote");
 const nodemailer = require("nodemailer");
+const { buildMailTransport } = require("../utils/mailTransport");
 
 const createQuoteRequest = async (req, res) => {
   try {
@@ -50,7 +56,7 @@ const listQuoteRequests = async (req, res) => {
 const estimateQuote = async (req, res) => {
   try {
     const { id } = req.params;
-    const { materialsCost, laborCost, otherCost, estimatedDays, message } = req.body;
+    const { materialsCost, laborCost, otherCost, estimatedDays, message, budget } = req.body;
 
     if (materialsCost == null || laborCost == null || otherCost == null) {
       return res.status(400).json({ message: "Materials, labor and other costs are required." });
@@ -63,6 +69,7 @@ const estimateQuote = async (req, res) => {
 
     const totalCost = Number(materialsCost) + Number(laborCost) + Number(otherCost);
 
+    quote.budget = budget ? String(budget).trim() : "";
     quote.estimate = {
       materialsCost: Number(materialsCost),
       laborCost: Number(laborCost),
@@ -102,43 +109,29 @@ const sendQuoteEmail = async (req, res) => {
 
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
-    let transporter;
-    let emailFrom = process.env.SMTP_FROM || smtpUser;
-
     if (!smtpUser || !smtpPass) {
-      if (process.env.NODE_ENV === "production") {
-        return res.status(500).json({ message: "Missing SMTP credentials. Set SMTP_USER and SMTP_PASS in backend/.env to send emails." });
-      }
-
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: testAccount.smtp.host,
-        port: testAccount.smtp.port,
-        secure: testAccount.smtp.secure,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        },
-      });
-      emailFrom = testAccount.user;
-      console.log("Using Ethereal test email account:", testAccount.user);
-    } else {
-      transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || "smtp.gmail.com",
-        port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
-        secure: process.env.SMTP_SECURE === "true",
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
+      return res.status(500).json({
+        message: "SMTP credentials are not configured. Set SMTP_USER and SMTP_PASS in backend/.env before sending emails.",
       });
     }
+
+    const transporter = await buildMailTransport();
+    const emailFrom = process.env.SMTP_FROM || smtpUser || "quotes@construction.local";
+    const budgetValue = quote.budget && String(quote.budget).trim() ? String(quote.budget).trim() : "Not provided";
+    const estimateSummary = [
+      `Materials: ${quote.estimate.materialsCost}`,
+      `Labor: ${quote.estimate.laborCost}`,
+      `Other: ${quote.estimate.otherCost}`,
+      `Total Cost: ${quote.estimate.totalCost}`,
+      `Estimated Time: ${quote.estimate.estimatedDays || "Not provided"}`,
+      `Budget: ${budgetValue}`,
+    ].join("\n");
 
     const emailHtml = `
       <div>
         <h2>Project Cost Estimate</h2>
         <p><strong>Client:</strong> ${quote.fullName}</p>
-        <p><strong>Company:</strong> ${quote.companyName}</p>
+        <p><strong>Company:</strong> ${quote.companyName || "Individual Client"}</p>
         <p><strong>Project Type:</strong> ${quote.projectType}</p>
         <p><strong>Project Size:</strong> ${quote.projectSize}</p>
         <p><strong>Details:</strong> ${quote.details}</p>
@@ -148,9 +141,11 @@ const sendQuoteEmail = async (req, res) => {
           <li>Labor: ${quote.estimate.laborCost}</li>
           <li>Other: ${quote.estimate.otherCost}</li>
           <li><strong>Total Cost:</strong> ${quote.estimate.totalCost}</li>
-          <li><strong>Estimated Time:</strong> ${quote.estimate.estimatedDays}</li>
+          <li><strong>Estimated Time:</strong> ${quote.estimate.estimatedDays || "Not provided"}</li>
+          <li><strong>Budget:</strong> ${budgetValue}</li>
         </ul>
-        <p>${message}</p>
+        <p><strong>Message from the team:</strong></p>
+        <p>${message.replace(/\n/g, "<br />")}</p>
       </div>
     `;
 
@@ -158,7 +153,7 @@ const sendQuoteEmail = async (req, res) => {
       from: emailFrom,
       to: quote.email,
       subject,
-      text: message,
+      text: `${message}\n\nEstimate Summary:\n${estimateSummary}`,
       html: emailHtml,
     };
 
@@ -177,7 +172,11 @@ const sendQuoteEmail = async (req, res) => {
     quote.status = "Sent";
     await quote.save();
 
-    res.json({ message: "Quote email sent to client successfully.", quote, previewUrl });
+    const responseMessage = previewUrl
+      ? `Quote email sent to client successfully. Preview: ${previewUrl}`
+      : "Quote email sent to client successfully.";
+
+    res.json({ message: responseMessage, quote, previewUrl });
   } catch (error) {
     console.error("Send quote email error:", error);
     res.status(500).json({ message: error.message });

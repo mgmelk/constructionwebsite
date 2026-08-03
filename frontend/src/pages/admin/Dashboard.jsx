@@ -73,6 +73,37 @@ function Dashboard() {
     notes: "",
   });
 
+  const buildPendingReceiptList = (projectsData = [], fallbackPending = []) => {
+    const fromProjects = (projectsData || []).flatMap((project) =>
+      (project.payments || []).filter((payment) => {
+        const hasReceipt = Boolean((payment.receiptUrl || "").trim() || (payment.receiptRef || "").trim());
+        return hasReceipt || payment.status === "Pending Approval" || payment.status === "Paid" || payment.receiptSubmitted;
+      }).map((payment) => ({
+        projectId: project._id,
+        projectName: project.projectName,
+        projectCode: project.projectCode,
+        clientName: project.client?.fullName || "Unknown Client",
+        clientEmail: project.client?.email || "",
+        id: payment.id || payment._id,
+        amount: payment.amount,
+        paymentMethod: payment.paymentMethod,
+        receiptRef: payment.receiptRef || "",
+        receiptUrl: payment.receiptUrl || "",
+        description: payment.description,
+        status: payment.receiptSubmitted || (payment.status === "Paid" && hasReceipt)
+          ? "Paid (Receipt Submitted)"
+          : payment.status,
+        submittedAt: payment.submittedAt || payment.updatedAt || project.updatedAt,
+      }))
+    );
+
+    if (fromProjects.length > 0) {
+      return fromProjects.sort((a, b) => new Date(b.submittedAt || 0) - new Date(a.submittedAt || 0));
+    }
+
+    return Array.isArray(fallbackPending) ? fallbackPending : [];
+  };
+
   const handleTogglePaymentStatus = async (projectId, paymentId, currentStatus) => {
     const newStatus = currentStatus === "Paid" ? "Unpaid" : "Paid";
     try {
@@ -167,12 +198,15 @@ function Dashboard() {
         axios.get(`/api/admin/pending-receipts`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { pending: [] } })),
       ]);
 
+      const projectsData = Array.isArray(projRes.data) ? projRes.data : [];
+      const fallbackPending = Array.isArray(pendingRes.data?.pending) ? pendingRes.data.pending : [];
+
       setStats(dashRes.data.dashboard);
-      setProjects(projRes.data || []);
+      setProjects(projectsData);
       setUsers(usersRes.data || []);
       setMessages(msgRes.data?.messages || []);
       setMaterials(materialsRes.data?.purchases || []);
-      setPendingReceipts(pendingRes.data?.pending || []);
+      setPendingReceipts(buildPendingReceiptList(projectsData, fallbackPending));
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
         localStorage.removeItem("token");

@@ -17,6 +17,7 @@ const protect = (req, res, next) => {
 
             // Save user data in request
             req.user = decoded;
+            console.log("[authMiddleware] token verified", { user: req.user });
 
             next();
 
