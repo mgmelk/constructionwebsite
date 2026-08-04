@@ -19,27 +19,6 @@
   margin: 0 auto;
 }
 
-.breadcrumb {
-  font-size: 14px;
-  color: #a0b3c6;
-  margin-bottom: 20px;
-}
-
-.breadcrumb a {
-  color: #f7b500;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.breadcrumb a:hover {
-  text-decoration: underline;
-}
-
-.active-breadcrumb {
-  color: #ffffff;
-  font-weight: 600;
-}
-
 .service-category-badge {
   display: inline-block;
   background: rgba(247, 181, 0, 0.15);

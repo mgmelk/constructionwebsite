@@ -5,7 +5,9 @@ import "./ServiceDetail.css";
 
 function ServiceDetail() {
   const { slug } = useParams();
-  const service = services.find((item) => item.slug === slug);
+  const serviceIndex = services.findIndex((item) => item.slug === slug);
+  const service = services[serviceIndex];
+  const isShortOverview = serviceIndex > 0;
 
   if (!service) {
     return (
@@ -30,10 +32,6 @@ function ServiceDetail() {
             </Link>
           </div>
 
-          <div className="breadcrumb">
-            <Link to="/">Home</Link> / <span>Services</span> / <span className="active-breadcrumb">{service.title}</span>
-          </div>
-
           <span className="service-category-badge">{service.categoryBadge || "WEMASTER SERVICES"}</span>
           <h1>{service.heroTitle || service.title}</h1>
           <p className="service-detail-intro">{service.intro}</p>
@@ -48,10 +46,11 @@ function ServiceDetail() {
         <section className="detail-section overview-section">
           <div className="section-title-wrap">
             <span className="section-subtitle"><FaClipboardList /> ABOUT THIS SERVICE</span>
-            <h2>Supply & Operations Overview</h2>
           </div>
           <div className="service-paragraphs">
-            {service.descriptionParagraphs ? (
+            {isShortOverview ? (
+              <p className="service-paragraph">{service.shortDescription || service.intro}</p>
+            ) : service.descriptionParagraphs ? (
               service.descriptionParagraphs.map((paragraph, idx) => (
                 <p key={idx} className="service-paragraph">{paragraph}</p>
               ))
