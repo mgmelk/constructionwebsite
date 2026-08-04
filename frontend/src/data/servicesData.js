@@ -67,13 +67,13 @@ export const services = [
     detailImage: softwareImage,
     projectHighlight: "Genbinet.com digital system integration for construction sector stakeholders in Ethiopia.",
     shortDescription:
-      "Custom digital solutions for construction management, operations, and business efficiency.",
+      "Digital solutions for construction management, operations, and business efficiency.",
     heroTitle: "Software Development",
     intro:
       "WEMASTER Construction PLC delivers innovative software solutions designed to improve construction management, automate business processes, and streamline daily operations.",
     descriptionParagraphs: [
       "WEMASTER Construction PLC delivers innovative software solutions designed to improve construction management, automate business processes, and streamline daily operations. We develop secure, scalable, and user-friendly applications that help organizations increase productivity, enhance collaboration, and make data-driven decisions.",
-      "Our software development services include custom web applications, mobile applications, construction management systems, project tracking platforms, inventory management, human resource systems, financial management tools, and client portals. We integrate modern technologies to ensure reliable performance, security, and flexibility as your business grows.",
+      "Our software development services include web applications, mobile applications, construction management systems, project tracking platforms, inventory management, human resource systems, financial management tools, and client portals. We integrate modern technologies to ensure reliable performance, security, and flexibility as your business grows.",
       "From planning and design to development, testing, deployment, and ongoing support, our experienced development team works closely with clients to create solutions tailored to their specific business needs."
     ],
     serviceListTitle: "Our Software Development Services",
