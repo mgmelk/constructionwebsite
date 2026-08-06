@@ -1,6 +1,6 @@
 import "./Topbar.css";
 import { Link, useNavigate } from "react-router-dom";
-import { FaBell, FaUserCircle } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 
 function Topbar({ adminName }) {
     const navigate = useNavigate();
@@ -25,7 +25,6 @@ function Topbar({ adminName }) {
                             Logout
                         </button>
                         <span className="admin-name">{adminName}</span>
-                        <FaBell className="icon" />
                         <FaUserCircle className="profile" />
                     </>
                 ) : (
