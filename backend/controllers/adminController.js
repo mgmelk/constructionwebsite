@@ -240,7 +240,7 @@ const getPendingReceipts = async (req, res) => {
                         receiptRef: p.receiptRef,
                         receiptUrl: p.receiptUrl,
                         description: p.description,
-                        status: p.status === "Paid" && hasReceipt ? "Paid (Receipt Submitted)" : p.status,
+                        status: hasReceipt && p.status !== "Paid" ? "Receipt Submitted - Pending Approval" : p.status,
                         submittedAt: p.submittedAt || p.updatedAt || proj.updatedAt,
                     });
                 }

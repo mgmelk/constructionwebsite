@@ -90,8 +90,8 @@ function Dashboard() {
         receiptRef: payment.receiptRef || "",
         receiptUrl: payment.receiptUrl || "",
         description: payment.description,
-        status: payment.receiptSubmitted || (payment.status === "Paid" && hasReceipt)
-          ? "Paid (Receipt Submitted)"
+        status: payment.receiptSubmitted || hasReceipt
+          ? "Receipt Submitted - Pending Approval"
           : payment.status,
         submittedAt: payment.submittedAt || payment.updatedAt || project.updatedAt,
       }))

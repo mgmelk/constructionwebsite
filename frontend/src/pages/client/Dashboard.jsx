@@ -135,7 +135,7 @@ function ClientDashboard() {
             return {
               ...payment,
               receiptSubmitted: true,
-              status: payment.status === "Unpaid" ? "Paid" : payment.status,
+              status: payment.status === "Unpaid" ? "Pending Approval" : payment.status,
             };
           }
           return payment;
@@ -281,7 +281,7 @@ function ClientDashboard() {
             paymentMethod: receiptInfo.paymentMethod || payment.paymentMethod,
             receiptRef: receiptInfo.receiptRef || payment.receiptRef,
             receiptUrl: receiptInfo.receiptUrl || payment.receiptUrl,
-            status: "Paid",
+            status: "Pending Approval",
             submittedAt: submissionTimestamp,
             receiptSubmitted: true,
           };
@@ -307,7 +307,7 @@ function ClientDashboard() {
               paymentMethod: receiptInfo.paymentMethod || payment.paymentMethod,
               receiptRef: receiptInfo.receiptRef || payment.receiptRef,
               receiptUrl: receiptInfo.receiptUrl || payment.receiptUrl,
-              status: "Paid",
+              status: "Pending Approval",
               submittedAt: submissionTimestamp,
               receiptSubmitted: true,
             };

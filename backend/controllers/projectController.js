@@ -515,7 +515,7 @@ const submitPaymentReceipt = async (req, res) => {
     if (receiptUrl) paymentItem.receiptUrl = receiptUrl;
     if (paymentMethod) paymentItem.paymentMethod = paymentMethod;
     if (receiptRef) paymentItem.receiptRef = receiptRef;
-    paymentItem.status = "Paid";
+    paymentItem.status = "Pending Approval";
     paymentItem.submittedAt = new Date();
 
     project.paidAmount = project.payments
