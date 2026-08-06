@@ -1,27 +1,23 @@
-const path = require("path");
-const dotenv = require("dotenv");
-
-dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
-
+const env = require("../config/env");
 const nodemailer = require("nodemailer");
 
 const buildMailTransport = async () => {
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
+  const smtpUser = env.SMTP_USER;
+  const smtpPass = env.SMTP_PASS;
 
   console.log("SMTP config check:", {
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
-    port: process.env.SMTP_PORT || 587,
-    secure: process.env.SMTP_SECURE === "true",
+    host: env.SMTP_HOST || "smtp.gmail.com",
+    port: env.SMTP_PORT || 587,
+    secure: env.SMTP_SECURE === "true",
     hasUser: Boolean(smtpUser),
     hasPass: Boolean(smtpPass),
   });
 
   if (smtpUser && smtpPass) {
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || "smtp.gmail.com",
-      port: process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587,
-      secure: process.env.SMTP_SECURE === "true",
+      host: env.SMTP_HOST || "smtp.gmail.com",
+      port: env.SMTP_PORT ? Number(env.SMTP_PORT) : 587,
+      secure: env.SMTP_SECURE === "true",
       auth: {
         user: smtpUser,
         pass: smtpPass,

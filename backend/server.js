@@ -1,8 +1,14 @@
 const path = require("path");
-const dotenv = require("dotenv");
+const env = require("./config/env");
 
-const backendEnvPath = path.resolve(__dirname, ".env");
-dotenv.config({ path: backendEnvPath });
+// Startup check for SMTP env variables to aid debugging
+try {
+  console.log("Startup SMTP env check:", {
+    SMTP_USER: env.SMTP_USER ? "SET" : "NOT SET",
+    SMTP_PASS: env.SMTP_PASS ? "SET" : "NOT SET",
+    SMTP_FROM: env.SMTP_FROM || null,
+  });
+} catch (e) {}
 
 const express = require("express");
 const cors = require("cors");
@@ -14,6 +20,7 @@ const clientRoutes = require("./routes/clientRoutes");
 const hrManagerRoutes = require("./routes/hrManagerRoutes");
 const engineerRoutes = require("./routes/engineerRoutes");
 const quoteRoutes = require("./routes/quoteRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const messageRoutes = require("./routes/messageRoutes");
@@ -121,6 +128,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/quotes", quoteRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/hr-managers", hrManagerRoutes);

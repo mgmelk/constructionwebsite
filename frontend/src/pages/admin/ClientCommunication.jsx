@@ -83,6 +83,19 @@ function ClientCommunicationPage() {
     }
   };
 
+  const apiFallbackUrl = "http://127.0.0.1:5000";
+
+  const safePost = async (url, data, config) => {
+    try {
+      return await axios.post(url, data, config);
+    } catch (err) {
+      if (err?.response?.status === 404 && typeof url === "string" && url.startsWith("/api")) {
+        return await axios.post(`${apiFallbackUrl}${url}`, data, config);
+      }
+      throw err;
+    }
+  };
+
   const handleReply = async (e, threadId) => {
     e.preventDefault();
     const replyText = (replyInputs[threadId] || "").trim();
@@ -90,7 +103,7 @@ function ClientCommunicationPage() {
 
     try {
       setReplyingId(threadId);
-      await axios.post(
+      await safePost(
         `/api/messages/${threadId}/reply`,
         { body: replyText },
         { headers: { Authorization: `Bearer ${token}` } }

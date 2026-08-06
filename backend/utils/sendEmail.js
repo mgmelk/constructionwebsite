@@ -1,16 +1,13 @@
-const path = require("path");
-const dotenv = require("dotenv");
+const env = require("../config/env");
 const nodemailer = require("nodemailer");
 const { buildMailTransport } = require("./mailTransport");
-
-dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const sendEmail = async ({ to, subject, html, text }) => {
   try {
     const transporter = await buildMailTransport();
 
     const mailOptions = {
-      from: process.env.SMTP_FROM || process.env.SMTP_USER || "quotes@construction.local",
+      from: env.SMTP_FROM || env.SMTP_USER || "quotes@construction.local",
       to,
       subject,
       html,

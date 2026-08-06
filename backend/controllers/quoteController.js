@@ -1,7 +1,4 @@
-const path = require("path");
-const dotenv = require("dotenv");
-
-dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+const env = require("../config/env");
 
 const Quote = require("../models/Quote");
 const nodemailer = require("nodemailer");
@@ -107,8 +104,8 @@ const sendQuoteEmail = async (req, res) => {
       return res.status(400).json({ message: "Quote must be estimated before sending email." });
     }
 
-    const smtpUser = process.env.SMTP_USER;
-    const smtpPass = process.env.SMTP_PASS;
+    const smtpUser = env.SMTP_USER;
+    const smtpPass = env.SMTP_PASS;
     if (!smtpUser || !smtpPass) {
       return res.status(500).json({
         message: "SMTP credentials are not configured. Set SMTP_USER and SMTP_PASS in backend/.env before sending emails.",

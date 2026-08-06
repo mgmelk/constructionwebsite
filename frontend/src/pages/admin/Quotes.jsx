@@ -296,7 +296,7 @@ function Quotes() {
                   </form>
 
                   <form className="admin-quote-form" onSubmit={handleSendEmail}>
-                    <h3>Send Budget to Client</h3>
+                    <h3>{selectedQuote.status === "Sent" ? "Resend Budget to Client" : "Send Budget to Client"}</h3>
                     <div className="admin-quote-summary-box">
                       <p><strong>Client:</strong> {selectedQuote.fullName}</p>
                       <p><strong>Budget:</strong> {estimateData.budget || "Not provided yet"}</p>
@@ -320,7 +320,9 @@ function Quotes() {
                         required
                       />
                     </label>
-                    <button type="submit">Send Budget to Client</button>
+                    <button type="submit">
+                      {selectedQuote.status === "Sent" ? "Resend Budget to Client" : "Send Budget to Client"}
+                    </button>
                   </form>
 
                   {statusMessage && <p className="admin-quote-status-message">{statusMessage}</p>}

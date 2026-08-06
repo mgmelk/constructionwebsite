@@ -242,6 +242,30 @@ function Dashboard() {
     return !mentionsEngineer;
   });
 
+  const apiFallbackUrl = "http://127.0.0.1:5000";
+
+  const safePost = async (url, data, config) => {
+    try {
+      return await axios.post(url, data, config);
+    } catch (err) {
+      if (err?.response?.status === 404 && typeof url === "string" && url.startsWith("/api")) {
+        return await axios.post(`${apiFallbackUrl}${url}`, data, config);
+      }
+      throw err;
+    }
+  };
+
+  const safeGet = async (url, config) => {
+    try {
+      return await axios.get(url, config);
+    } catch (err) {
+      if (err?.response?.status === 404 && typeof url === "string" && url.startsWith("/api")) {
+        return await axios.get(`${apiFallbackUrl}${url}`, config);
+      }
+      throw err;
+    }
+  };
+
   const handleMaterialSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -1086,7 +1110,7 @@ function Dashboard() {
                         e.preventDefault();
                         const text = replyTexts[msg._id];
                         if (!text || !text.trim()) return;
-                        axios.post(
+                        safePost(
                           `/api/messages/${msg._id}/reply`,
                           {
                             body: text.trim(),
@@ -1097,10 +1121,11 @@ function Dashboard() {
                         ).then(() => {
                           setSuccess("Direct message successfully sent!");
                           setReplyTexts((prev) => ({ ...prev, [msg._id]: "" }));
-                          return axios.get('/api/messages', { headers: { Authorization: `Bearer ${token}` } });
+                          return safeGet('/api/messages', { headers: { Authorization: `Bearer ${token}` } });
                         }).then((updatedRes) => {
                           setMessages(updatedRes.data?.messages || []);
                         }).catch((err) => {
+                          console.error("Admin reply error:", err);
                           setError("Failed to submit reply.");
                         });
                       }} style={{ display: "flex", gap: "12px" }}>
