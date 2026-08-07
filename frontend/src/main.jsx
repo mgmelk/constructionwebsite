@@ -10,16 +10,14 @@ const normalizeApiBaseUrl = (value) => {
 };
 
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
-const isLocalDev = typeof window !== 'undefined' && (
-  window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1' ||
-  window.location.hostname === '0.0.0.0' ||
-  window.location.hostname.endsWith('.local') ||
-  window.location.hostname.startsWith('192.168.') ||
-  window.location.hostname.startsWith('10.') ||
-  window.location.hostname.startsWith('172.')
-);
-const fallbackApiUrl = isLocalDev ? 'http://127.0.0.1:5000' : 'https://constructionwebsite-8h8j.onrender.com';
+const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+const isLocalDevHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
+const isLocalNetworkHost = hostname.endsWith('.local') || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.');
+const fallbackApiUrl = configuredApiUrl
+  ? configuredApiUrl
+  : isLocalDevHost || isLocalNetworkHost
+  ? `${window.location.protocol}//${hostname}:5000`
+  : 'https://constructionwebsite-8h8j.onrender.com';
 
 axios.defaults.baseURL = normalizeApiBaseUrl(configuredApiUrl || fallbackApiUrl);
 

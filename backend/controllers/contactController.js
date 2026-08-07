@@ -1,3 +1,4 @@
+const env = require("../config/env");
 const sendEmail = require("../utils/sendEmail");
 
 const sanitizeText = (value) => {
@@ -8,11 +9,8 @@ const sanitizeText = (value) => {
 const sendContactEmail = async (req, res) => {
   try {
     const {
-      fullName,
       phoneNumber,
       emailAddress,
-      company,
-      subject,
       message,
       website,
     } = req.body;
@@ -21,18 +19,13 @@ const sendContactEmail = async (req, res) => {
       return res.status(400).json({ message: "Spam detected. Please submit the form normally." });
     }
 
-    const sanitizedFullName = sanitizeText(fullName);
     const sanitizedPhoneNumber = sanitizeText(phoneNumber);
     const sanitizedEmailAddress = sanitizeText(emailAddress).toLowerCase();
-    const sanitizedCompany = sanitizeText(company);
-    const sanitizedSubject = sanitizeText(subject);
     const sanitizedMessage = sanitizeText(message);
 
     const missing = [];
-    if (!sanitizedFullName) missing.push("Full Name");
     if (!sanitizedPhoneNumber) missing.push("Phone Number");
     if (!sanitizedEmailAddress) missing.push("Email Address");
-    if (!sanitizedSubject) missing.push("Subject");
     if (!sanitizedMessage) missing.push("Message");
 
     const emailRegex = /^\S+@\S+\.\S+$/;
@@ -46,30 +39,31 @@ const sendContactEmail = async (req, res) => {
 
     const html = `
       <h2>Contact Form Submission</h2>
-      <p><strong>Full Name:</strong> ${sanitizedFullName}</p>
       <p><strong>Phone Number:</strong> ${sanitizedPhoneNumber}</p>
       <p><strong>Email Address:</strong> ${sanitizedEmailAddress}</p>
-      <p><strong>Company:</strong> ${sanitizedCompany || "N/A"}</p>
-      <p><strong>Subject:</strong> ${sanitizedSubject}</p>
       <p><strong>Message:</strong></p>
       <p>${sanitizedMessage.replace(/\n/g, "<br />")}</p>
     `;
 
-    const text = `Contact Form Submission\n\nFull Name: ${sanitizedFullName}\nPhone Number: ${sanitizedPhoneNumber}\nEmail Address: ${sanitizedEmailAddress}\nCompany: ${sanitizedCompany || "N/A"}\nSubject: ${sanitizedSubject}\nMessage: ${sanitizedMessage}`;
+    const text = `Contact Form Submission\n\nPhone Number: ${sanitizedPhoneNumber}\nEmail Address: ${sanitizedEmailAddress}\nMessage: ${sanitizedMessage}`;
 
-    const contactRecipient = "melkamugatew11@gmail.com";
+    const contactRecipient = env.CONTACT_EMAIL || "melkamugatew11@gmail.com";
     console.log("Contact form recipient:", contactRecipient);
 
     const result = await sendEmail({
       to: contactRecipient,
-      subject: `New Contact Form: ${sanitizedSubject}`,
+      subject: "New Contact Form Submission",
       html,
       text,
       replyTo: sanitizedEmailAddress,
     });
 
     if (!result.success) {
-      return res.status(500).json({ message: "Unable to send your message right now. Please try again later." });
+      console.error("Contact email failed:", result.message);
+      const responseMessage = result.message
+        ? `Unable to send your message right now. Error: ${result.message}`
+        : "Unable to send your message right now. Please try again later.";
+      return res.status(500).json({ message: responseMessage });
     }
 
     res.status(200).json({ message: "Your message has been sent successfully." });

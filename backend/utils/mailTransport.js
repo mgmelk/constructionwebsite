@@ -13,8 +13,10 @@ const buildMailTransport = async () => {
     hasPass: Boolean(smtpPass),
   });
 
+  let transporter;
+
   if (smtpUser && smtpPass) {
-    const transporter = nodemailer.createTransport({
+    transporter = nodemailer.createTransport({
       host: env.SMTP_HOST || "smtp.gmail.com",
       port: env.SMTP_PORT ? Number(env.SMTP_PORT) : 587,
       secure: env.SMTP_SECURE === "true",
@@ -28,8 +30,7 @@ const buildMailTransport = async () => {
       await transporter.verify();
       return transporter;
     } catch (error) {
-      const detail = error?.response || error?.message || "Unknown SMTP error";
-      throw new Error(`SMTP verification failed for ${smtpUser}. Check your Gmail App Password and that 2-Step Verification is enabled. Details: ${detail}`);
+      console.warn(`SMTP transport verification failed for ${smtpUser}. Falling back to a test account. Error: ${error?.message || error}`);
     }
   }
 

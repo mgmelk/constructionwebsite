@@ -3,16 +3,13 @@ import axios from "axios";
 import "./Contact.css";
 
 const initialForm = {
-  fullName: "",
   phoneNumber: "",
   emailAddress: "",
-  company: "",
-  subject: "",
   message: "",
   website: "",
 };
 
-const requiredFields = ["fullName", "phoneNumber", "emailAddress", "subject", "message"];
+const requiredFields = ["phoneNumber", "emailAddress", "message"];
 
 function Contact() {
   const [formData, setFormData] = useState(initialForm);
@@ -32,9 +29,6 @@ function Contact() {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full Name is required.";
-    }
     if (!formData.phoneNumber.trim()) {
       newErrors.phoneNumber = "Phone Number is required.";
     }
@@ -42,9 +36,6 @@ function Contact() {
       newErrors.emailAddress = "Email Address is required.";
     } else if (!/^\S+@\S+\.\S+$/.test(formData.emailAddress.trim())) {
       newErrors.emailAddress = "Enter a valid email address.";
-    }
-    if (!formData.subject.trim()) {
-      newErrors.subject = "Subject is required.";
     }
     if (!formData.message.trim()) {
       newErrors.message = "Message is required.";
@@ -73,11 +64,8 @@ function Contact() {
     setStatus({ type: "", message: "" });
 
     const payload = {
-      fullName: formData.fullName.trim(),
       phoneNumber: formData.phoneNumber.trim(),
       emailAddress: formData.emailAddress.trim().toLowerCase(),
-      company: formData.company.trim(),
-      subject: formData.subject.trim(),
       message: formData.message.trim(),
       website: formData.website,
     };
@@ -128,20 +116,6 @@ function Contact() {
         <form className="contact-form" onSubmit={handleSubmit} noValidate>
           <div className="contact-grid">
             <label className="contact-group">
-              Full Name <span className="required-star">*</span>
-              <input
-                type="text"
-                name="fullName"
-                value={formData.fullName}
-                onChange={handleChange}
-                className={errors.fullName ? "contact-input input-error" : "contact-input"}
-                placeholder="Your full name"
-                required
-              />
-              {renderError("fullName")}
-            </label>
-
-            <label className="contact-group">
               Phone Number <span className="required-star">*</span>
               <input
                 type="tel"
@@ -167,32 +141,6 @@ function Contact() {
                 required
               />
               {renderError("emailAddress")}
-            </label>
-
-            <label className="contact-group">
-              Company
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="contact-input"
-                placeholder="Your company name (optional)"
-              />
-            </label>
-
-            <label className="contact-group contact-full-width">
-              Subject <span className="required-star">*</span>
-              <input
-                type="text"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                className={errors.subject ? "contact-input input-error" : "contact-input"}
-                placeholder="Brief subject"
-                required
-              />
-              {renderError("subject")}
             </label>
 
             <label className="contact-group contact-full-width">

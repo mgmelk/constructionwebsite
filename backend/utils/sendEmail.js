@@ -2,7 +2,7 @@ const env = require("../config/env");
 const nodemailer = require("nodemailer");
 const { buildMailTransport } = require("./mailTransport");
 
-const sendEmail = async ({ to, subject, html, text }) => {
+const sendEmail = async ({ to, subject, html, text, replyTo }) => {
   try {
     const transporter = await buildMailTransport();
 
@@ -12,6 +12,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
       subject,
       html,
       text: text || html?.replace(/<[^>]*>?/gm, "") || "",
+      ...(replyTo ? { replyTo } : {}),
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -27,7 +28,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
     console.error("sendEmail failed:", error);
     return {
       success: false,
-      message: error.message,
+      message: error?.message || (typeof error === "string" ? error : JSON.stringify(error)),
     };
   }
 };
