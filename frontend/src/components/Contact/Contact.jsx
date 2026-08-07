@@ -82,15 +82,17 @@ function Contact() {
       // If we received 404 from current baseURL, try local backend directly (common dev proxy issue)
       const statusCode = error?.response?.status;
       if (statusCode === 404) {
+        const fallbackHost = window.location.hostname;
+        const fallbackUrl = `http://${fallbackHost}:5000/api/contact`;
         try {
-          const altResp = await axios.post("http://127.0.0.1:5000/api/contact", payload);
+          const altResp = await axios.post(fallbackUrl, payload);
           const altMsg = altResp?.data?.message || "Your message has been sent successfully.";
           setStatus({ type: "success", message: altMsg });
           setFormData(initialForm);
           setErrors({});
           return;
         } catch (altErr) {
-          console.error("Fallback post to http://127.0.0.1:5000 failed:", altErr);
+          console.error(`Fallback post to ${fallbackUrl} failed:`, altErr);
           const altMsg = altErr?.response?.data?.message || altErr.message || "Unable to send your message. Please try again.";
           setStatus({ type: "error", message: altMsg });
           return;
