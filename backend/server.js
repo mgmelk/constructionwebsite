@@ -79,6 +79,10 @@ const mongoose = require("mongoose");
 
 // Database readiness middleware for API routes
 app.use("/api", (req, res, next) => {
+  if (req.path === "/contact") {
+    return next();
+  }
+
   if (mongoose.connection.readyState !== 1) {
     console.log(`[API Warning] Database connection not ready (readyState: ${mongoose.connection.readyState}). Re-triggering connectDB()...`);
     connectDB();
