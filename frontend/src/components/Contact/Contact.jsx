@@ -90,7 +90,8 @@ function Contact() {
 
       if ((statusCode === 404 || networkFailure) && originalUrl !== fallbackUrl) {
         try {
-          const altResp = await axios.post(fallbackUrl, payload, { timeout: 20000 });
+          const altResp = await axios.post(fallbackUrl, payload, { timeout: 100000 });
+        
           const altMsg = altResp?.data?.message || "Your message has been sent successfully.";
           setStatus({ type: "success", message: altMsg });
           setFormData(initialForm);
