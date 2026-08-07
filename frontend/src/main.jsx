@@ -17,7 +17,7 @@ const fallbackApiUrl = configuredApiUrl
   ? configuredApiUrl
   : isLocalDevHost || isLocalNetworkHost
   ? `${window.location.protocol}//${hostname}:5000`
-  : 'https://constructionwebsite-8h8j.onrender.com';
+  : `${window.location.protocol}//${hostname}`;
 
 axios.defaults.baseURL = normalizeApiBaseUrl(configuredApiUrl || fallbackApiUrl);
 

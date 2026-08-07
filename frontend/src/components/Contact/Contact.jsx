@@ -71,7 +71,7 @@ function Contact() {
     };
 
     try {
-      const response = await axios.post("/api/contact", payload);
+      const response = await axios.post("/api/contact", payload, { timeout: 20000 });
       const successMessage = response?.data?.message || "Your message has been sent successfully.";
 
       setStatus({ type: "success", message: successMessage });
@@ -79,13 +79,15 @@ function Contact() {
       setErrors({});
     } catch (error) {
       console.error("Contact send error:", error);
-      // If we received 404 from current baseURL, try local backend directly (common dev proxy issue)
       const statusCode = error?.response?.status;
-      if (statusCode === 404) {
-        const fallbackHost = window.location.hostname;
-        const fallbackUrl = `http://${fallbackHost}:5000/api/contact`;
+      const networkFailure = !error?.response || error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout") || error.message?.toLowerCase().includes("network error");
+      const fallbackHost = window.location.hostname;
+      const fallbackUrl = `${window.location.protocol}//${fallbackHost}:5000/api/contact`;
+      const originalUrl = error?.config?.url || "/api/contact";
+
+      if ((statusCode === 404 || networkFailure) && originalUrl !== fallbackUrl) {
         try {
-          const altResp = await axios.post(fallbackUrl, payload);
+          const altResp = await axios.post(fallbackUrl, payload, { timeout: 20000 });
           const altMsg = altResp?.data?.message || "Your message has been sent successfully.";
           setStatus({ type: "success", message: altMsg });
           setFormData(initialForm);
