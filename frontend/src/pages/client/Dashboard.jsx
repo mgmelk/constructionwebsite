@@ -208,6 +208,7 @@ function ClientDashboard() {
       }
     } catch (err) {
       console.log("Using sample project dataset for client showcase:", err);
+      showNotification("Unable to load projects from server. Showing sample data. Fix backend/API connection to submit receipts.");
       setClientProjects([DEFAULT_CLIENT_PROJECT]);
       setSelectedProject(DEFAULT_CLIENT_PROJECT);
     } finally {
@@ -401,7 +402,43 @@ function ClientDashboard() {
       showNotification(res?.data?.message || "Successfully submitted!");
     } catch (err) {
       console.error("Receipt submission error:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Receipt submission failed. Please try again.";
+      const attemptedUrl = err?.config?.baseURL
+        ? `${err.config.baseURL}${err.config.url}`
+        : err?.config?.url || requestUrl;
+      const networkFailure = !err?.response || err.code === "ECONNABORTED" || err.message?.toLowerCase().includes("timeout") || err.message?.toLowerCase().includes("network error");
+      const fallbackHost = window.location.hostname;
+      const fallbackUrl = `${window.location.protocol}//${fallbackHost}:5000/api/projects/${encodedProjectRouteId}/payments/${encodedPaymentId}/receipt`;
+
+      if (networkFailure && attemptedUrl !== fallbackUrl) {
+        console.warn(`Receipt retrying via fallback URL: ${fallbackUrl}`);
+        try {
+          const altRes = await axios.post(
+            fallbackUrl,
+            payload,
+            {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+              timeout: 15000,
+            }
+          );
+          console.log("Receipt submission fallback success", { responseData: altRes.data });
+          updateLocalReceiptSubmission(selectedPaymentMilestone, payload);
+          setReceiptImageBase64("");
+          setReceiptRefInput("");
+          setPaymentAmount("20000000");
+          setPaymentReason("");
+          setPaymentDate(new Date().toISOString().slice(0, 10));
+          setActiveModal(null);
+          showNotification(altRes?.data?.message || "Successfully submitted via fallback URL!");
+          return;
+        } catch (fallbackErr) {
+          console.error(`Receipt fallback submission failed:`, fallbackErr);
+          const fallbackMessage = fallbackErr.response?.data?.message || fallbackErr.message || `Receipt submission failed via fallback URL: ${fallbackUrl}`;
+          showNotification(fallbackMessage);
+          return;
+        }
+      }
+
+      const errorMessage = err.response?.data?.message || err.message || `Receipt submission failed. Could not reach ${attemptedUrl}`;
       showNotification(errorMessage);
     } finally {
       setSubmittingReceipt(false);

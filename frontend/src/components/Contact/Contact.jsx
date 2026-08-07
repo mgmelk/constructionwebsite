@@ -79,11 +79,14 @@ function Contact() {
       setErrors({});
     } catch (error) {
       console.error("Contact send error:", error);
+      const attemptedUrl = error?.config?.baseURL
+        ? `${error.config.baseURL}${error.config.url}`
+        : error?.config?.url || "/api/contact";
       const statusCode = error?.response?.status;
       const networkFailure = !error?.response || error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout") || error.message?.toLowerCase().includes("network error");
       const fallbackHost = window.location.hostname;
       const fallbackUrl = `${window.location.protocol}//${fallbackHost}:5000/api/contact`;
-      const originalUrl = error?.config?.url || "/api/contact";
+      const originalUrl = attemptedUrl;
 
       if ((statusCode === 404 || networkFailure) && originalUrl !== fallbackUrl) {
         try {
@@ -95,13 +98,13 @@ function Contact() {
           return;
         } catch (altErr) {
           console.error(`Fallback post to ${fallbackUrl} failed:`, altErr);
-          const altMsg = altErr?.response?.data?.message || altErr.message || "Unable to send your message. Please try again.";
+          const altMsg = altErr?.response?.data?.message || altErr.message || `Network Error: could not reach ${fallbackUrl}`;
           setStatus({ type: "error", message: altMsg });
           return;
         }
       }
 
-      const serverMessage = error?.response?.data?.message || error.message || "Unable to send your message. Please try again.";
+      const serverMessage = error?.response?.data?.message || error.message || `Network Error: could not reach ${attemptedUrl}`;
       setStatus({ type: "error", message: serverMessage });
     } finally {
       setSubmitting(false);

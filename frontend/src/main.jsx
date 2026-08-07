@@ -13,13 +13,16 @@ const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
 const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 const isLocalDevHost = hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0';
 const isLocalNetworkHost = hostname.endsWith('.local') || hostname.startsWith('192.168.') || hostname.startsWith('10.') || hostname.startsWith('172.');
-const fallbackApiUrl = configuredApiUrl
-  ? configuredApiUrl
+const hasInvalidConfiguredUrl = configuredApiUrl && (configuredApiUrl.toLowerCase().includes('your_backend_url') || configuredApiUrl.toLowerCase().includes('https://https://'));
+const effectiveConfiguredApiUrl = hasInvalidConfiguredUrl ? '' : configuredApiUrl;
+const fallbackApiUrl = effectiveConfiguredApiUrl
+  ? effectiveConfiguredApiUrl
   : isLocalDevHost || isLocalNetworkHost
   ? `${window.location.protocol}//${hostname}:5000`
   : `${window.location.protocol}//${hostname}`;
 
-axios.defaults.baseURL = normalizeApiBaseUrl(configuredApiUrl || fallbackApiUrl);
+axios.defaults.baseURL = normalizeApiBaseUrl(effectiveConfiguredApiUrl || fallbackApiUrl);
+console.log('Axios baseURL:', axios.defaults.baseURL);
 
 // Global axios response interceptor to handle expired/invalid JWTs
 axios.interceptors.response.use(
