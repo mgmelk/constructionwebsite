@@ -18,17 +18,17 @@ const connectDB = async () => {
   if (isConnecting) return;
   isConnecting = true;
 
-  try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 20000,
-      connectTimeoutMS: 20000,
-      socketTimeoutMS: 45000,
-      maxPoolSize: 10,
-      retryWrites: true,
-      appName: "construction-backend",
-      tls: true,
-      tlsAllowInvalidCertificates: false,
-    });
+try {
+  const conn = await mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 30000,
+    connectTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    maxPoolSize: 10,
+    retryWrites: true,
+    appName: "construction-backend",
+    tls: true,
+    tlsAllowInvalidCertificates: false,
+  });
 
     reconnectAttempts = 0;
     const dbName = conn.connection?.db?.databaseName || "construction";
