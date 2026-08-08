@@ -33,18 +33,16 @@ axios.interceptors.response.use(
 
     if (status === 401) {
       const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
-      const isProtectedDashboard = currentPath.startsWith('/admin') || currentPath.startsWith('/hr') || currentPath.startsWith('/engineer') || currentPath.startsWith('/employee') || currentPath.startsWith('/client');
 
-      if (isProtectedDashboard) {
-        const shouldRedirect = !localStorage.getItem('token') || !localStorage.getItem('userRole');
-        if (shouldRedirect) {
-          if (currentPath.startsWith('/admin')) {
-            window.location.href = '/admin/login';
-          } else {
-            window.location.href = '/login';
-          }
-        }
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('adminName');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userId');
+
+      const redirectLogin = currentPath.startsWith('/admin') ? '/admin/login' : '/login';
+      window.location.href = redirectLogin;
     }
 
     return Promise.reject(error);

@@ -23,6 +23,9 @@ const protect = (req, res, next) => {
 
         } catch (error) {
             console.error("Token verification error:", error);
+            if (error.name === "TokenExpiredError") {
+                return res.status(401).json({ message: "Session expired. Please log in again." });
+            }
             const msg = process.env.NODE_ENV === "production" ? "Invalid token" : `Invalid token: ${error.message}`;
             return res.status(401).json({ message: msg });
         }
