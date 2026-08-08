@@ -325,12 +325,12 @@ function ClientDashboard() {
     e.preventDefault();
 
     if (!paymentAmount || Number(paymentAmount) <= 0) {
-      showNotification("Please enter a valid amount in Birr.");
+      alert("Please enter a valid amount in Birr.");
       return;
     }
 
     if (!paymentReason.trim()) {
-      showNotification("Please add a reason for payment.");
+      alert("Please add a reason for payment.");
       return;
     }
 
@@ -344,7 +344,7 @@ function ClientDashboard() {
     });
     const resolvedProjectId = validProjectId || (fallbackProject ? String(fallbackProject._id).trim() : null) || selectedProject?.projectCode || selectedProject?.projectName || null;
 
-    if (selectedProjectId === "client-prj-101") {
+    if (selectedProjectId === "client-prj-10111") {
       console.log("Receipt submit blocked for sample project", { selectedProject });
       showNotification("This is a sample project. Please log in with a real client account to submit a receipt.");
       return;

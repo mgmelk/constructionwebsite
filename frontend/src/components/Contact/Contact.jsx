@@ -82,29 +82,6 @@ function Contact() {
       const attemptedUrl = error?.config?.baseURL
         ? `${error.config.baseURL}${error.config.url}`
         : error?.config?.url || "/api/contact";
-      const statusCode = error?.response?.status;
-      const networkFailure = !error?.response || error.code === "ECONNABORTED" || error.message?.toLowerCase().includes("timeout") || error.message?.toLowerCase().includes("network error");
-      const fallbackHost = window.location.hostname;
-      const fallbackUrl = `${window.location.protocol}//${fallbackHost}:5000/api/contact`;
-      const originalUrl = attemptedUrl;
-
-      if ((statusCode === 404 || networkFailure) && originalUrl !== fallbackUrl) {
-        try {
-          const altResp = await axios.post(fallbackUrl, payload, { timeout: 100000 });
-        
-          const altMsg = altResp?.data?.message || "Your message has been sent successfully.";
-          setStatus({ type: "success", message: altMsg });
-          setFormData(initialForm);
-          setErrors({});
-          return;
-        } catch (altErr) {
-          console.error(`Fallback post to ${fallbackUrl} failed:`, altErr);
-          const altMsg = altErr?.response?.data?.message || altErr.message || `Network Error: could not reach ${fallbackUrl}`;
-          setStatus({ type: "error", message: altMsg });
-          return;
-        }
-      }
-
       const serverMessage = error?.response?.data?.message || error.message || `Network Error: could not reach ${attemptedUrl}`;
       setStatus({ type: "error", message: serverMessage });
     } finally {
